@@ -1,0 +1,418 @@
+/* USPS-Inspired Professional Design */
+:root {
+    --usps-blue: #333366;
+    --usps-light-blue: #005EA2;
+    --usps-red: #E71921;
+    --usps-gray: #f7f7f7;
+    --usps-dark: #333333;
+    --usps-light: #E7F6F8;
+}
+
+/* Enhanced Professional Header - Override defaults */
+.site-header {
+    background: white !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.08) !important;
+    padding: 0 !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 1000 !important;
+    border-bottom: 1px solid #e0e0e0 !important;
+}
+
+.site-header .header-bar {
+    max-width: 1200px !important;
+    margin: 0 auto !important;
+    padding: 6px 30px !important;
+    display: flex !important;
+    justify-content: space-between !important;
+    align-items: center !important;
+    min-height: 90px !important;
+    height: auto !important;
+    flex-wrap: nowrap !important;
+}
+
+.site-header .brand {
+    font-size: 20px !important;
+    font-weight: 700 !important;
+    color: var(--usps-blue) !important;
+    text-decoration: none !important;
+    display: flex !important;
+    align-items: center !important;
+    gap: 8px !important;
+    letter-spacing: -0.3px !important;
+    width: auto !important;
+    background: transparent !important;
+    padding: 0 !important;
+}
+
+.site-header .brand .brand-logo,
+.site-header .brand img {
+    background: transparent !important;
+    border: none !important;
+    box-shadow: none !important;
+    height: 90px !important;
+    width: 210px !important;
+    display: block !important;
+}
+
+.site-header .brand .icon {
+    background: linear-gradient(135deg, var(--usps-blue) 0%, var(--usps-light-blue) 100%) !important;
+    color: white !important;
+    width: 30px !important;
+    height: 30px !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    border-radius: 4px !important;
+    font-size: 16px !important;
+    flex-shrink: 0 !important;
+}
+
+.site-header nav {
+    display: flex !important;
+    gap: 25px !important;
+    align-items: center !important;
+    flex-wrap: nowrap !important;
+    width: auto !important;
+    justify-content: flex-end !important;
+}
+
+/* Navigation Links */
+.site-header nav a {
+    color: var(--usps-blue) !important;
+    font-weight: 600 !important;
+    font-size: 14px !important;
+    padding: 4px 0 !important;
+    border-bottom: 2px solid transparent !important;
+    transition: all 0.2s ease !important;
+    text-decoration: none !important;
+    white-space: nowrap !important;
+    background: transparent !important;
+    border-radius: 0 !important;
+}
+
+.site-header nav a:hover {
+    color: var(--usps-light-blue) !important;
+    border-bottom-color: var(--usps-light-blue) !important;
+    background: transparent !important;
+}
+
+.site-header nav a.active {
+    color: var(--usps-light-blue) !important;
+    border-bottom-color: var(--usps-light-blue) !important;
+    background: transparent !important;
+}
+
+/* Hero Banner */
+.hero-banner {
+    background: linear-gradient(135deg, var(--usps-blue) 0%, var(--usps-light-blue) 100%);
+    color: white;
+    padding: 60px 20px;
+    text-align: center;
+    margin-bottom: 0;
+}
+
+.hero-banner h1 {
+    font-size: 42px;
+    font-weight: 300;
+    margin-bottom: 16px;
+    letter-spacing: -0.5px;
+}
+
+.hero-banner p {
+    font-size: 18px;
+    opacity: 0.95;
+    max-width: 700px;
+    margin: 0 auto 30px;
+}
+
+/* Quick Tools Grid */
+.quick-tools-section {
+    background: white;
+    padding: 50px 20px;
+    border-bottom: 1px solid #e0e0e0;
+}
+
+.quick-tools-section h2 {
+    text-align: center;
+    color: var(--usps-blue);
+    font-size: 32px;
+    font-weight: 400;
+    margin-bottom: 40px;
+}
+
+.quick-tools-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 25px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.quick-tool-card {
+    text-align: center;
+    padding: 30px 20px;
+    background: white;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.quick-tool-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+    border-color: var(--usps-light-blue);
+}
+
+.quick-tool-card .icon {
+    width: 64px;
+    height: 64px;
+    margin: 0 auto 15px;
+    background: var(--usps-light);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    color: var(--usps-light-blue);
+}
+
+.quick-tool-card h3 {
+    color: var(--usps-blue);
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 8px;
+}
+
+.quick-tool-card p {
+    color: #666;
+    font-size: 14px;
+    margin: 0;
+}
+
+/* Featured Services */
+.featured-services {
+    background: var(--usps-gray);
+    padding: 60px 20px;
+}
+
+.featured-services h2 {
+    text-align: center;
+    color: var(--usps-blue);
+    font-size: 32px;
+    font-weight: 400;
+    margin-bottom: 50px;
+}
+
+.featured-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.featured-card {
+    background: white;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    transition: all 0.3s;
+}
+
+.featured-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0,0,0,0.15);
+}
+
+.featured-card img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+}
+
+.featured-card-content {
+    padding: 25px;
+}
+
+.featured-card-content h3 {
+    color: var(--usps-blue);
+    font-size: 22px;
+    font-weight: 500;
+    margin-bottom: 12px;
+}
+
+.featured-card-content p {
+    color: #666;
+    font-size: 15px;
+    line-height: 1.6;
+    margin-bottom: 20px;
+}
+
+/* Enhanced Buttons */
+.btn-usps {
+    background: var(--usps-light-blue);
+    color: white;
+    padding: 12px 32px;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-usps:hover {
+    background: #004872;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,94,162,0.3);
+}
+
+.btn-usps-primary {
+    background: var(--usps-blue);
+}
+
+.btn-usps-primary:hover {
+    background: #222244;
+}
+
+.btn-usps-outline {
+    background: white;
+    color: var(--usps-light-blue);
+    border: 2px solid var(--usps-light-blue);
+}
+
+.btn-usps-outline:hover {
+    background: var(--usps-light-blue);
+    color: white;
+}
+
+/* Alert Banners */
+.alert-banner {
+    padding: 15px 20px;
+    margin: 20px 0;
+    border-left: 4px solid;
+    border-radius: 4px;
+}
+
+.alert-banner.info {
+    background: var(--usps-light);
+    border-left-color: var(--usps-light-blue);
+    color: #004872;
+}
+
+.alert-banner.warning {
+    background: #faf3d1;
+    border-left-color: #ffbe2e;
+    color: #8b6914;
+}
+
+.alert-banner.error {
+    background: #f4e3db;
+    border-left-color: var(--usps-red);
+    color: #c01119;
+}
+
+/* Professional Footer */
+.site-footer {
+    background: var(--usps-blue);
+    color: white;
+    padding: 50px 20px 20px;
+    margin-top: 60px;
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 40px;
+    max-width: 1200px;
+    margin: 0 auto 30px;
+}
+
+.footer-section h3 {
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    color: white;
+}
+
+.footer-section ul {
+    list-style: none;
+    padding: 0;
+}
+
+.footer-section ul li {
+    margin-bottom: 10px;
+}
+
+.footer-section a {
+    color: rgba(255,255,255,0.8);
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.3s;
+}
+
+.footer-section a:hover {
+    color: white;
+    text-decoration: underline;
+}
+
+.footer-bottom {
+    border-top: 1px solid rgba(255,255,255,0.2);
+    padding-top: 20px;
+    text-align: center;
+    color: rgba(255,255,255,0.7);
+    font-size: 13px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .site-header .header-bar {
+        flex-direction: column;
+        gap: 20px;
+        padding: 15px 20px;
+    }
+    
+    .site-header .brand {
+        font-size: 26px;
+    }
+    
+    .site-header .brand .icon {
+        width: 45px;
+        height: 45px;
+        font-size: 22px;
+    }
+    
+    .site-header nav {
+        flex-direction: column;
+        gap: 12px;
+        width: 100%;
+        text-align: center;
+    }
+    
+    .site-header nav a {
+        font-size: 15px;
+        padding: 8px;
+        width: 100%;
+    }
+    
+    .hero-banner h1 {
+        font-size: 32px;
+    }
+    
+    .hero-banner {
+        padding: 40px 20px;
+    }
+    
+    .quick-tools-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 15px;
+    }
+    
+    .featured-grid {
+        grid-template-columns: 1fr;
+    }
+}

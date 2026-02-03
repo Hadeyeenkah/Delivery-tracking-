@@ -1,0 +1,15 @@
+<svg width="220" height="52" viewBox="0 0 220 52" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="220" height="52" rx="4" fill="#1e40af"/>
+  
+  <!-- Icon - Fast forward symbol -->
+  <g transform="translate(12, 12)">
+    <path d="M0 4 L10 14 L0 24 L3 14 Z" fill="#fbbf24"/>
+    <path d="M8 4 L18 14 L8 24 L11 14 Z" fill="#60a5fa"/>
+    <path d="M16 4 L26 14 L16 24 L19 14 Z" fill="#ffffff"/>
+  </g>
+  
+  <!-- Text -->
+  <text x="48" y="23" font-family="Arial, sans-serif" font-size="18" font-weight="900" fill="#ffffff" letter-spacing="0.5">SwiftTrack</text>
+  <text x="48" y="40" font-family="Arial, sans-serif" font-size="10" font-weight="600" fill="#fbbf24" letter-spacing="1.2">EXPRESS DELIVERY</text>
+</svg>

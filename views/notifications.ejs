@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1e40af" />
+  <title>Notifications</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="stylesheet" href="/css/usps-theme.css" />
+  <link rel="stylesheet" href="/css/responsive-improvements.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-bar">
+      <a class="brand" href="/">
+        <img src="/my-logo.png" alt="Logo" class="brand-logo" />
+      </a>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/track">Track</a>
+        <a href="/track-multiple">Multiple Tracking</a>
+        <a href="/rates">Rates</a>
+        <a href="/help">Help</a>
+      </nav>
+    </div>
+  </header>
+      <a href="/">Home</a>
+      <a href="/track-multiple">Track Multiple</a>
+      <a href="/rates">Rates</a>
+      <a href="/locations">Locations</a>
+      <a href="/help">Help</a>
+      <a href="/admin/shipments">Admin</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <section class="card">
+    <h2>Get Tracking Notifications</h2>
+    <p>Tracking: <strong><%= shipment.trackingNumber %></strong></p>
+    <p>Receive real-time updates about your package via email or SMS</p>
+
+    <form method="post" action="/shipments/<%= shipment.id %>/notifications" class="grid grid-2">
+      <div class="full-row">
+        <label for="email">Email Address</label>
+        <input type="email" id="email" name="email" placeholder="your@email.com" value="<%= shipment.notifications?.email || '' %>" />
+      </div>
+
+      <div class="full-row">
+        <label for="phone">Mobile Number</label>
+        <input type="tel" id="phone" name="phone" placeholder="+1 555-123-4567" value="<%= shipment.notifications?.phone || '' %>" />
+      </div>
+
+      <div class="full-row">
+        <label>
+          <input type="checkbox" name="emailUpdates" <%= shipment.notifications?.emailUpdates ? 'checked' : '' %> />
+          Send email notifications
+        </label>
+      </div>
+
+      <div class="full-row">
+        <label>
+          <input type="checkbox" name="smsUpdates" <%= shipment.notifications?.smsUpdates ? 'checked' : '' %> />
+          Send SMS notifications
+        </label>
+      </div>
+
+      <div class="full-row form-actions">
+        <button type="submit">Save Notification Settings</button>
+        <a href="/track/<%= shipment.trackingNumber %>" class="btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">© ParcelTrack</div>
+</footer>
+</body>
+</html>

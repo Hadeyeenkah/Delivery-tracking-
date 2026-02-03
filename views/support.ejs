@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1e40af" />
+  <title>Support & Claims</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="stylesheet" href="/css/usps-theme.css" />
+  <link rel="stylesheet" href="/css/responsive-improvements.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-bar">
+      <a class="brand" href="/">
+        <img src="/my-logo.png" alt="Logo" class="brand-logo" />
+      </a>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/track">Track</a>
+        <a href="/track-multiple">Multiple Tracking</a>
+        <a href="/rates">Rates</a>
+        <a href="/help">Help</a>
+      </nav>
+    </div>
+  </header>
+      <a href="/">Home</a>
+      <a href="/track-multiple">Track Multiple</a>
+      <a href="/rates">Rates</a>
+      <a href="/locations">Locations</a>
+      <a href="/help">Help</a>
+      <a href="/admin/shipments">Admin</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <% if (typeof success !== 'undefined' && success) { %>
+    <section class="card notice">
+      <h3>✓ Claim Submitted Successfully</h3>
+      <p>Your <%= claimType %> claim has been received. We'll review it and contact you within 3-5 business days.</p>
+      <a href="/">Return to Home</a>
+    </section>
+  <% } %>
+
+  <section class="card">
+    <h2>Customer Support & Claims</h2>
+    <p>We're here to help resolve any issues with your shipment.</p>
+  </section>
+
+  <section class="card">
+    <h3>File a Claim</h3>
+    <form method="post" action="/support/claim" class="grid grid-2">
+      <div class="full-row">
+        <label for="trackingNumber">Tracking Number *</label>
+        <input id="trackingNumber" name="trackingNumber" placeholder="TRK123456789012" required />
+      </div>
+
+      <div class="full-row">
+        <label for="claimType">Claim Type *</label>
+        <select id="claimType" name="claimType" required>
+          <option value="">Select a type...</option>
+          <option value="Lost Package">Lost Package</option>
+          <option value="Damaged Package">Damaged Package</option>
+          <option value="Missing Items">Missing Items</option>
+          <option value="Wrong Item">Wrong Item Delivered</option>
+          <option value="Delivery Issue">Delivery Issue</option>
+          <option value="Other">Other</option>
+        </select>
+      </div>
+
+      <div class="full-row">
+        <label for="email">Contact Email *</label>
+        <input type="email" id="email" name="email" placeholder="your@email.com" required />
+      </div>
+
+      <div class="full-row">
+        <label for="description">Description *</label>
+        <textarea id="description" name="description" rows="5" placeholder="Please describe the issue in detail..." required></textarea>
+      </div>
+
+      <div class="full-row">
+        <button type="submit">Submit Claim</button>
+      </div>
+    </form>
+  </section>
+
+  <section class="card">
+    <h3>Contact Information</h3>
+    <div class="contact-grid">
+      <div class="contact-item">
+        <h4>Customer Service</h4>
+        <p>Phone: 1-800-PARCEL-1</p>
+        <p>Hours: Mon-Fri 8am-8pm, Sat 9am-5pm</p>
+      </div>
+      <div class="contact-item">
+        <h4>Email Support</h4>
+        <p>support@parceltrack.example</p>
+        <p>Response within 24 hours</p>
+      </div>
+      <div class="contact-item">
+        <h4>Live Chat</h4>
+        <p>Available on our website</p>
+        <p>Mon-Fri 9am-6pm</p>
+      </div>
+    </div>
+  </section>
+
+  <section class="card">
+    <h3>Quick Links</h3>
+    <ul>
+      <li><a href="/help">Help & FAQ</a></li>
+      <li><a href="/locations">Find a Location</a></li>
+      <li><a href="/">Track a Package</a></li>
+      <li><a href="/rates">Calculate Rates</a></li>
+    </ul>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">© ParcelTrack</div>
+</footer>
+</body>
+</html>

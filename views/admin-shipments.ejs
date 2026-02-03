@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1e40af" />
+  <title>Admin - Shipments</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="stylesheet" href="/css/responsive-improvements.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-bar">
+      <a class="brand" href="/">
+        <img src="/my-logo.png" alt="Logo" class="brand-logo" />
+      </a>
+      <nav>
+      <a href="/">Home</a>
+      <a href="/shipments/new">Create Shipment</a>
+      <a href="/rates">Rates</a>
+      <a href="/locations">Locations</a>
+      <a href="/admin/shipments" class="active">Admin</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <!-- Page Header -->
+  <div style="background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%); padding: 2rem; border-radius: 12px; margin-bottom: 2rem; border-left: 4px solid var(--accent); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+    <div>
+      <h1 style="margin: 0 0 0.5rem 0; color: var(--accent); font-size: 2rem;">Admin Control Center</h1>
+      <p style="margin: 0; color: #6b7280; font-size: 1.05rem;">Manage every shipment, update statuses, and monitor delivery performance</p>
+    </div>
+    <a href="/shipments/new" style="background: var(--accent); color: white; padding: 12px 24px; border-radius: 8px; text-decoration: none; font-weight: 700; display: inline-flex; align-items: center; gap: 8px; white-space: nowrap; transition: background 0.2s;" onmouseover="this.style.background='var(--accent-600)'" onmouseout="this.style.background='var(--accent)'">
+      <span style="font-size: 1.2rem;">📦</span>
+      Create New Shipment
+    </a>
+  </div>
+
+  <!-- Metrics -->
+  <section style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+    <div style="padding: 1.25rem; border-radius: 10px; background: white; border: 2px solid #e5e7eb;">
+      <p style="margin: 0; color: #6b7280; font-size: 0.9rem;">Total Shipments</p>
+      <h3 style="margin: 0.25rem 0 0; color: var(--accent); font-size: 1.6rem; font-weight: 800;"><%= shipments.length %></h3>
+    </div>
+    <div style="padding: 1.25rem; border-radius: 10px; background: white; border: 2px solid #e5e7eb;">
+      <p style="margin: 0; color: #6b7280; font-size: 0.9rem;">In Transit</p>
+      <h3 style="margin: 0.25rem 0 0; color: #f59e0b; font-size: 1.6rem; font-weight: 800;"><%= shipments.filter(s => s.currentStatus === 'In Transit').length %></h3>
+    </div>
+    <div style="padding: 1.25rem; border-radius: 10px; background: white; border: 2px solid #e5e7eb;">
+      <p style="margin: 0; color: #6b7280; font-size: 0.9rem;">Delivered</p>
+      <h3 style="margin: 0.25rem 0 0; color: #16a34a; font-size: 1.6rem; font-weight: 800;"><%= shipments.filter(s => s.currentStatus === 'Delivered').length %></h3>
+    </div>
+    <div style="padding: 1.25rem; border-radius: 10px; background: white; border: 2px solid #e5e7eb;">
+      <p style="margin: 0; color: #6b7280; font-size: 0.9rem;">Issues</p>
+      <h3 style="margin: 0.25rem 0 0; color: #dc2626; font-size: 1.6rem; font-weight: 800;"><%= shipments.filter(s => s.currentStatus === 'Delivery Failed' || s.currentStatus === 'Returned to Sender').length %></h3>
+    </div>
+  </section>
+
+  <!-- Filters -->
+  <section class="card" style="margin-bottom: 2rem;">
+    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+      <div style="width: 40px; height: 40px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.1rem;">🔍</div>
+      <div>
+        <h2 style="margin: 0; color: var(--accent);">Search & Filter</h2>
+        <p style="margin: 0; color: #6b7280;">Filter by tracking number, customer, route, or status</p>
+      </div>
+    </div>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 1rem;">
+      <input id="filterSearch" type="text" placeholder="Search tracking #, customer, city" style="padding: 0.75rem; border: 2px solid #d1d5db; border-radius: 6px; font-size: 1rem;" oninput="filterRows()" />
+      <select id="filterStatus" style="padding: 0.75rem; border: 2px solid #d1d5db; border-radius: 6px; font-size: 1rem; background: white;" onchange="filterRows()">
+        <option value="">All Statuses</option>
+        <option value="Accepted">Accepted</option>
+        <option value="In Transit">In Transit</option>
+        <option value="Out for Delivery">Out for Delivery</option>
+        <option value="Delivered">Delivered</option>
+        <option value="Delivery Failed">Delivery Failed</option>
+        <option value="Returned to Sender">Returned to Sender</option>
+      </select>
+    </div>
+  </section>
+
+  <!-- Shipments Table -->
+  <section class="card">
+    <h2 style="margin: 0 0 1rem 0; color: var(--accent);">All Shipments</h2>
+    <% if (shipments.length === 0) { %>
+      <p>No shipments yet. <a href="/shipments/new">Create one</a> to get started.</p>
+    <% } else { %>
+    <div style="overflow-x: auto;">
+      <table class="table" id="shipmentsTable" style="width: 100%; font-size: 0.95rem;">
+        <thead>
+          <tr>
+            <th style="padding: 0.75rem 0.5rem;">Tracking</th>
+            <th style="padding: 0.75rem 0.5rem;">Route</th>
+            <th style="padding: 0.75rem 0.5rem;">Recipient</th>
+            <th style="padding: 0.75rem 0.5rem;">Status</th>
+            <th style="padding: 0.75rem 0.5rem;">Last Update</th>
+            <th style="padding: 0.75rem 0.5rem;">Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+        <% shipments.forEach(s => { %>
+          <tr class="shipment-row">
+            <td>
+              <div style="display: flex; flex-direction: column; gap: 0.25rem;">
+                <a href="/track/<%= s.trackingNumber %>" style="font-weight: 700; color: var(--accent); font-size: 0.9rem;"><%= s.trackingNumber.substring(0, 12) %>...</a>
+                <small style="color: #6b7280; font-family: monospace; font-size: 0.75rem;">ID: <%= s.id.substring(0, 8) %>...</small>
+              </div>
+            </td>
+            <td>
+              <div style="color: #111827; font-weight: 600; font-size: 0.9rem;">
+                <%= (s.originCity || 'N/A').substring(0, 8) %> → <%= (s.destinationCity || 'N/A').substring(0, 8) %>
+              </div>
+              <div style="color: #6b7280; font-size: 0.8rem;"><%= (s.serviceType || 'Priority').substring(0, 10) %></div>
+            </td>
+            <td>
+              <div style="font-weight: 700; color: #111827; font-size: 0.9rem;"><%= ((s.recipient && s.recipient.name) || s.recipientName || 'Unknown').substring(0, 12) %></div>
+              <div style="color: #6b7280; font-size: 0.8rem;"><%= ((s.recipient && s.recipient.address) || s.recipientStreet || '').substring(0, 15) %></div>
+            </td>
+            <td>
+              <span class="status-badge" style="font-weight: 700;"><%= s.currentStatus %></span>
+            </td>
+            <td>
+              <% const lastUpdate = s.statusHistory && s.statusHistory.length ? s.statusHistory[s.statusHistory.length - 1] : null; %>
+              <div style="color: #111827; font-weight: 600; font-size: 0.85rem;"><%= lastUpdate ? new Date(lastUpdate.at).toLocaleDateString() : 'N/A' %></div>
+              <div style="color: #6b7280; font-size: 0.8rem;"><%= lastUpdate && lastUpdate.note ? lastUpdate.note.substring(0, 12) : '' %></div>
+            </td>
+            <td>
+              <form method="post" action="/admin/shipments/<%= s.id %>/status" class="inline admin-form" style="display: flex; flex-direction: column; gap: 0.35rem;">
+                <select name="status" required style="padding: 0.4rem; border: 2px solid #d1d5db; border-radius: 6px; font-size: 0.85rem;">
+                  <option value="">Status...</option>
+                  <option<%= s.currentStatus==='Accepted'?' selected':'' %>>Accepted</option>
+                  <option<%= s.currentStatus==='In Transit'?' selected':'' %>>In Transit</option>
+                  <option<%= s.currentStatus==='Out for Delivery'?' selected':'' %>>Out for Delivery</option>
+                  <option<%= s.currentStatus==='Delivered'?' selected':'' %>>Delivered</option>
+                  <option<%= s.currentStatus==='Delivery Failed'?' selected':'' %>>Delivery Failed</option>
+                  <option<%= s.currentStatus==='Returned to Sender'?' selected':'' %>>Returned to Sender</option>
+                </select>
+                <button type="submit" style="background: var(--accent); color: white; border: none; padding: 0.4rem 0.6rem; border-radius: 6px; font-weight: 700; cursor: pointer; font-size: 0.85rem;">Update</button>
+                <a href="/track/<%= s.trackingNumber %>" style="color: var(--accent); font-weight: 700; font-size: 0.8rem; text-decoration: none;">View →</a>
+              </form>
+            </td>
+          </tr>
+        <% }) %>
+        </tbody>
+      </table>
+    </div>
+    <% } %>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container" style="padding: 2rem 0;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+      <div>
+        <h4 style="margin: 0 0 1rem 0; color: var(--accent); font-size: 1rem;">Admin Tools</h4>
+        <ul style="list-style: none; padding: 0; margin: 0;">
+          <li style="margin-bottom: 0.5rem;"><a href="/admin/shipments" style="color: #6b7280; text-decoration: none;">Shipment Dashboard</a></li>
+          <li style="margin-bottom: 0.5rem;"><a href="/track-multiple" style="color: #6b7280; text-decoration: none;">Bulk Tracking</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 style="margin: 0 0 1rem 0; color: var(--accent); font-size: 1rem;">Shipping Services</h4>
+        <ul style="list-style: none; padding: 0; margin: 0;">
+          <li style="margin-bottom: 0.5rem;"><a href="/shipments/new" style="color: #6b7280; text-decoration: none;">Create Shipment</a></li>
+          <li style="margin-bottom: 0.5rem;"><a href="/rates" style="color: #6b7280; text-decoration: none;">Rates & Pricing</a></li>
+          <li style="margin-bottom: 0.5rem;"><a href="/delivery-preferences" style="color: #6b7280; text-decoration: none;">Delivery Preferences</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 style="margin: 0 0 1rem 0; color: var(--accent); font-size: 1rem;">Support</h4>
+        <ul style="list-style: none; padding: 0; margin: 0;">
+          <li style="margin-bottom: 0.5rem;"><a href="/support" style="color: #6b7280; text-decoration: none;">Contact Support</a></li>
+          <li style="margin-bottom: 0.5rem;"><a href="/help" style="color: #6b7280; text-decoration: none;">Help & FAQ</a></li>
+        </ul>
+      </div>
+    </div>
+    <div style="text-align: center; padding-top: 2rem; border-top: 1px solid #e5e7eb; color: #6b7280;">
+      © 2026 Express Delivery Services. All Rights Reserved.
+    </div>
+  </div>
+</footer>
+
+<script>
+  function filterRows() {
+    const term = document.getElementById('filterSearch').value.toLowerCase();
+    const status = document.getElementById('filterStatus').value;
+    document.querySelectorAll('#shipmentsTable tbody tr.shipment-row').forEach(row => {
+      const text = row.textContent.toLowerCase();
+      const currentStatus = row.querySelector('.status-badge')?.textContent || '';
+      const matchesTerm = !term || text.includes(term);
+      const matchesStatus = !status || currentStatus === status;
+      row.style.display = matchesTerm && matchesStatus ? '' : 'none';
+    });
+  }
+
+  function alertHistory(tracking, history) {
+    if (!history || !history.length) {
+      alert('No history available for ' + tracking);
+      return;
+    }
+    const lines = history.map(h => `${new Date(h.at).toLocaleString()} — ${h.status}${h.note ? ' — ' + h.note : ''}`);
+    alert(`Status History for ${tracking}:\n\n` + lines.join('\n'));
+  }
+</script>
+</body>
+</html>

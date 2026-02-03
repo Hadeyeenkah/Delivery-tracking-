@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rates</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="stylesheet" href="/css/usps-theme.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-bar">
+      <a class="brand" href="/">
+        <img src="/my-logo.png" alt="Logo" class="brand-logo" />
+      </a>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/track">Track</a>
+        <a href="/track-multiple">Multiple Tracking</a>
+        <a href="/rates" class="active">Rates</a>
+        <a href="/help">Help</a>
+      </nav>
+    </div>
+  </header>
+  </div>
+</header>
+
+<main class="container">
+  <!-- Page Header -->
+  <div style="background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%); padding: 2rem; border-radius: 12px; margin-bottom: 2rem; border-left: 4px solid var(--accent);">
+    <h1 style="margin: 0 0 0.5rem 0; color: var(--accent); font-size: 2rem;">Shipping Rates & Pricing</h1>
+    <p style="margin: 0; color: #6b7280; font-size: 1.1rem;">Calculate postage costs and compare our mail and shipping services</p>
+  </div>
+
+  <!-- Calculate Postage Section -->
+  <section class="card" style="margin-bottom: 2rem;">
+    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid #e5e7eb;">
+      <div style="width: 48px; height: 48px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;">📦</div>
+      <div>
+        <h2 style="margin: 0; color: var(--accent);">Calculate Postage</h2>
+        <p style="margin: 0; color: #6b7280; font-size: 0.95rem;">Enter package details to estimate shipping costs</p>
+      </div>
+    </div>
+
+    <form method="post" action="/rates/quote" style="display: grid; gap: 1.5rem;">
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div>
+          <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Package Weight</label>
+          <div style="display: flex; gap: 0.5rem;">
+            <input name="weightLbs" type="number" min="0" max="70" placeholder="lbs" style="flex: 1; padding: 0.75rem; border: 2px solid #d1d5db; border-radius: 6px; font-size: 1rem;" />
+            <input name="weightOz" type="number" min="0" max="15" placeholder="oz" style="flex: 1; padding: 0.75rem; border: 2px solid #d1d5db; border-radius: 6px; font-size: 1rem;" />
+          </div>
+          <small style="color: #6b7280; display: block; margin-top: 0.25rem;">Maximum weight: 70 lbs</small>
+        </div>
+        
+        <div>
+          <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Service Type</label>
+          <select name="serviceType" required style="width: 100%; padding: 0.75rem; border: 2px solid #d1d5db; border-radius: 6px; font-size: 1rem; background: white;">
+            <option value="">Select Service...</option>
+            <option value="priority-express">Priority Mail Express (1-2 days)</option>
+            <option value="priority">Priority Mail (1-3 days)</option>
+            <option value="first-class">First-Class Mail (1-5 days)</option>
+            <option value="retail-ground">Retail Ground (2-8 days)</option>
+            <option value="media">Media Mail (2-8 days)</option>
+          </select>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem;">
+        <div>
+          <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Origin ZIP Code</label>
+          <input name="originZip" type="text" pattern="[0-9]{5}" maxlength="5" placeholder="e.g., 10001" required style="width: 100%; padding: 0.75rem; border: 2px solid #d1d5db; border-radius: 6px; font-size: 1rem;" />
+        </div>
+        
+        <div>
+          <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Destination ZIP Code</label>
+          <input name="destZip" type="text" pattern="[0-9]{5}" maxlength="5" placeholder="e.g., 90210" required style="width: 100%; padding: 0.75rem; border: 2px solid #d1d5db; border-radius: 6px; font-size: 1rem;" />
+        </div>
+      </div>
+
+      <button type="submit" style="background: var(--accent); color: white; padding: 1rem 2rem; border: none; border-radius: 6px; font-size: 1.1rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+        <span>🔍</span>
+        <span>Calculate Price</span>
+      </button>
+    </form>
+
+    <% if (quote) { %>
+      <div style="margin-top: 2rem; padding: 1.5rem; background: linear-gradient(135deg, #e0f2fe 0%, #dbeafe 100%); border-radius: 8px; border-left: 4px solid var(--accent);">
+        <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1rem;">
+          <div style="width: 40px; height: 40px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.2rem;">✓</div>
+          <h3 style="margin: 0; color: var(--accent);">Estimated Shipping Cost</h3>
+        </div>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 1rem;">
+          <div>
+            <p style="margin: 0 0 0.25rem 0; color: #6b7280; font-size: 0.9rem;">Weight</p>
+            <p style="margin: 0; font-weight: 600; color: #1f2937;"><%= quote.weightKg %> kg (<%= Math.floor(quote.weightKg * 2.20462) %> lbs)</p>
+          </div>
+          <div>
+            <p style="margin: 0 0 0.25rem 0; color: #6b7280; font-size: 0.9rem;">Distance</p>
+            <p style="margin: 0; font-weight: 600; color: #1f2937;"><%= quote.distanceKm %> km (<%= Math.round(quote.distanceKm * 0.621371) %> miles)</p>
+          </div>
+          <div>
+            <p style="margin: 0 0 0.25rem 0; color: #6b7280; font-size: 0.9rem;">Estimated Cost</p>
+            <p style="margin: 0; font-weight: 700; color: var(--accent); font-size: 1.5rem;">$<%= quote.price %></p>
+          </div>
+        </div>
+        <p style="margin: 1rem 0 0 0; color: #6b7280; font-size: 0.9rem;">💡 Actual prices may vary based on additional services and packaging requirements</p>
+      </div>
+    <% } %>
+  </section>
+
+  <!-- Service Comparison -->
+  <section class="card" style="margin-bottom: 2rem;">
+    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid #e5e7eb;">
+      <div style="width: 48px; height: 48px; background: var(--accent-red); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;">⚡</div>
+      <div>
+        <h2 style="margin: 0; color: var(--accent);">Service Comparison</h2>
+        <p style="margin: 0; color: #6b7280; font-size: 0.95rem;">Compare delivery times and features</p>
+      </div>
+    </div>
+
+    <div style="overflow-x: auto;">
+      <table style="width: 100%; border-collapse: collapse;">
+        <thead>
+          <tr style="background: #f9fafb; border-bottom: 2px solid var(--accent);">
+            <th style="padding: 1rem; text-align: left; color: var(--accent); font-weight: 700;">Service</th>
+            <th style="padding: 1rem; text-align: left; color: var(--accent); font-weight: 700;">Delivery Time</th>
+            <th style="padding: 1rem; text-align: left; color: var(--accent); font-weight: 700;">Starting Price</th>
+            <th style="padding: 1rem; text-align: left; color: var(--accent); font-weight: 700;">Features</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr style="border-bottom: 1px solid #e5e7eb;">
+            <td style="padding: 1rem;">
+              <strong style="color: var(--accent);">Priority Mail Express</strong>
+              <br><small style="color: #6b7280;">Our fastest service</small>
+            </td>
+            <td style="padding: 1rem;">1-2 Business Days</td>
+            <td style="padding: 1rem;"><strong>$28.75</strong></td>
+            <td style="padding: 1rem;">
+              <span style="display: inline-block; background: #dcfce7; color: #15803d; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.85rem; margin: 0.125rem;">✓ Money-back guarantee</span>
+              <span style="display: inline-block; background: #dcfce7; color: #15803d; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.85rem; margin: 0.125rem;">✓ Free tracking</span>
+              <span style="display: inline-block; background: #dcfce7; color: #15803d; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.85rem; margin: 0.125rem;">✓ $100 insurance</span>
+            </td>
+          </tr>
+          <tr style="border-bottom: 1px solid #e5e7eb; background: #fefce8;">
+            <td style="padding: 1rem;">
+              <strong style="color: var(--accent);">Priority Mail</strong>
+              <br><small style="color: #6b7280;">Our most popular</small>
+            </td>
+            <td style="padding: 1rem;">1-3 Business Days</td>
+            <td style="padding: 1rem;"><strong>$9.35</strong></td>
+            <td style="padding: 1rem;">
+              <span style="display: inline-block; background: #dcfce7; color: #15803d; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.85rem; margin: 0.125rem;">✓ Free tracking</span>
+              <span style="display: inline-block; background: #dcfce7; color: #15803d; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.85rem; margin: 0.125rem;">✓ $100 insurance</span>
+              <span style="display: inline-block; background: #dcfce7; color: #15803d; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.85rem; margin: 0.125rem;">✓ Flat rate boxes</span>
+            </td>
+          </tr>
+          <tr style="border-bottom: 1px solid #e5e7eb;">
+            <td style="padding: 1rem;">
+              <strong style="color: var(--accent);">First-Class Mail</strong>
+              <br><small style="color: #6b7280;">Affordable option</small>
+            </td>
+            <td style="padding: 1rem;">1-5 Business Days</td>
+            <td style="padding: 1rem;"><strong>$0.73</strong></td>
+            <td style="padding: 1rem;">
+              <span style="display: inline-block; background: #dbeafe; color: #1e40af; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.85rem; margin: 0.125rem;">Up to 13 oz</span>
+              <span style="display: inline-block; background: #dbeafe; color: #1e40af; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.85rem; margin: 0.125rem;">Tracking available</span>
+            </td>
+          </tr>
+          <tr style="border-bottom: 1px solid #e5e7eb;">
+            <td style="padding: 1rem;">
+              <strong style="color: var(--accent);">SwiftTrack Ground</strong>
+              <br><small style="color: #6b7280;">For heavy items</small>
+            </td>
+            <td style="padding: 1rem;">2-8 Business Days</td>
+            <td style="padding: 1rem;"><strong>$9.95</strong></td>
+            <td style="padding: 1rem;">
+              <span style="display: inline-block; background: #dbeafe; color: #1e40af; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.85rem; margin: 0.125rem;">Up to 70 lbs</span>
+              <span style="display: inline-block; background: #dbeafe; color: #1e40af; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.85rem; margin: 0.125rem;">Free tracking</span>
+            </td>
+          </tr>
+          <tr style="border-bottom: 1px solid #e5e7eb;">
+            <td style="padding: 1rem;">
+              <strong style="color: var(--accent);">Media Mail</strong>
+              <br><small style="color: #6b7280;">Books & educational materials</small>
+            </td>
+            <td style="padding: 1rem;">2-8 Business Days</td>
+            <td style="padding: 1rem;"><strong>$4.63</strong></td>
+            <td style="padding: 1rem;">
+              <span style="display: inline-block; background: #dbeafe; color: #1e40af; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.85rem; margin: 0.125rem;">Up to 70 lbs</span>
+              <span style="display: inline-block; background: #dbeafe; color: #1e40af; padding: 0.25rem 0.5rem; border-radius: 4px; font-size: 0.85rem; margin: 0.125rem;">Books, media only</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <!-- Additional Services -->
+  <section class="card" style="margin-bottom: 2rem;">
+    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid #e5e7eb;">
+      <div style="width: 48px; height: 48px; background: #059669; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;">🛡️</div>
+      <div>
+        <h2 style="margin: 0; color: var(--accent);">Additional Services & Pricing</h2>
+        <p style="margin: 0; color: #6b7280; font-size: 0.95rem;">Enhance your shipment with extra protection and services</p>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem;">
+      <div style="padding: 1.5rem; border: 2px solid #e5e7eb; border-radius: 8px; background: white;">
+        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.75rem;">
+          <h3 style="margin: 0; color: var(--accent); font-size: 1.1rem;">Signature Confirmation</h3>
+          <span style="background: var(--accent); color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-weight: 600; font-size: 0.9rem;">$3.10</span>
+        </div>
+        <p style="margin: 0; color: #6b7280; line-height: 1.6;">Proof of delivery with recipient signature upon delivery</p>
+      </div>
+
+      <div style="padding: 1.5rem; border: 2px solid #e5e7eb; border-radius: 8px; background: white;">
+        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.75rem;">
+          <h3 style="margin: 0; color: var(--accent); font-size: 1.1rem;">Insurance</h3>
+          <span style="background: var(--accent); color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-weight: 600; font-size: 0.9rem;">$2.45</span>
+        </div>
+        <p style="margin: 0; color: #6b7280; line-height: 1.6;">Protect your shipment up to $100 against loss or damage</p>
+      </div>
+
+      <div style="padding: 1.5rem; border: 2px solid #e5e7eb; border-radius: 8px; background: white;">
+        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.75rem;">
+          <h3 style="margin: 0; color: var(--accent); font-size: 1.1rem;">Certified Mail</h3>
+          <span style="background: var(--accent); color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-weight: 600; font-size: 0.9rem;">$4.00</span>
+        </div>
+        <p style="margin: 0; color: #6b7280; line-height: 1.6;">Proof of mailing with record maintained by SwiftTrack for legal purposes</p>
+      </div>
+
+      <div style="padding: 1.5rem; border: 2px solid #e5e7eb; border-radius: 8px; background: white;">
+        <div style="display: flex; justify-content: space-between; align-items: start; margin-bottom: 0.75rem;">
+          <h3 style="margin: 0; color: var(--accent); font-size: 1.1rem;">Return Receipt</h3>
+          <span style="background: var(--accent); color: white; padding: 0.25rem 0.75rem; border-radius: 12px; font-weight: 600; font-size: 0.9rem;">$2.00</span>
+        </div>
+        <p style="margin: 0; color: #6b7280; line-height: 1.6;">Receive confirmation when your item is delivered or attempted</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Important Information -->
+  <section class="card" style="background: #fef3c7; border-left: 4px solid #f59e0b;">
+    <h3 style="margin: 0 0 1rem 0; color: #92400e; display: flex; align-items: center; gap: 0.5rem;">
+      <span style="font-size: 1.5rem;">💡</span>
+      <span>Important Information</span>
+    </h3>
+    <ul style="margin: 0; padding-left: 1.5rem; color: #78350f; line-height: 1.8;">
+      <li>Prices shown are starting rates and may vary based on package dimensions, weight, and destination</li>
+      <li>Delivery times are estimates and not guaranteed (except Priority Mail Express)</li>
+      <li>Commercial pricing is available for business accounts</li>
+      <li>Flat Rate packaging is available for Priority Mail and Priority Mail Express</li>
+      <li>Media Mail is restricted to books, sound recordings, educational materials, and similar media</li>
+      <li>International shipping rates are different and vary by destination country</li>
+    </ul>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container" style="padding: 2rem 0;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+      <div>
+        <h4 style="margin: 0 0 1rem 0; color: var(--accent); font-size: 1rem;">Customer Service</h4>
+        <ul style="list-style: none; padding: 0; margin: 0;">
+          <li style="margin-bottom: 0.5rem;"><a href="/support" style="color: #6b7280; text-decoration: none;">Contact Us</a></li>
+          <li style="margin-bottom: 0.5rem;"><a href="/help" style="color: #6b7280; text-decoration: none;">Help & FAQ</a></li>
+          <li style="margin-bottom: 0.5rem;"><a href="/track-multiple" style="color: #6b7280; text-decoration: none;">Track Package</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 style="margin: 0 0 1rem 0; color: var(--accent); font-size: 1rem;">Shipping Services</h4>
+        <ul style="list-style: none; padding: 0; margin: 0;">
+          <li style="margin-bottom: 0.5rem;"><a href="/shipments/new" style="color: #6b7280; text-decoration: none;">Create Shipment</a></li>
+          <li style="margin-bottom: 0.5rem;"><a href="/rates" style="color: #6b7280; text-decoration: none;">Rates & Pricing</a></li>
+          <li style="margin-bottom: 0.5rem;"><a href="/delivery-preferences" style="color: #6b7280; text-decoration: none;">Delivery Preferences</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 style="margin: 0 0 1rem 0; color: var(--accent); font-size: 1rem;">Resources</h4>
+        <ul style="list-style: none; padding: 0; margin: 0;">
+          <li style="margin-bottom: 0.5rem;"><a href="/locations" style="color: #6b7280; text-decoration: none;">Find Locations</a></li>
+          <li style="margin-bottom: 0.5rem;"><a href="/redelivery" style="color: #6b7280; text-decoration: none;">Schedule Redelivery</a></li>
+          <li style="margin-bottom: 0.5rem;"><a href="/notifications" style="color: #6b7280; text-decoration: none;">Get Notifications</a></li>
+        </ul>
+      </div>
+    </div>
+    <div style="text-align: center; padding-top: 2rem; border-top: 1px solid #e5e7eb; color: #6b7280;">
+      © 2026 Express Delivery Services. All Rights Reserved.
+    </div>
+  </div>
+</footer>
+</body>
+</html>

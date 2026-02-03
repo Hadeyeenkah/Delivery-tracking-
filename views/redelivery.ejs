@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<title>Schedule Redelivery | Delivery Tracking</title>
+	<meta name="description" content="Schedule a redelivery for your package. Check your tracking number and select a new delivery date." />
+	<link rel="canonical" href="/redelivery" />
+	<link rel="stylesheet" href="/css/usps-theme.css">
+	<link rel="stylesheet" href="/css/styles.css">
+	<style>
+		body { min-width: 0 !important; overflow-x: hidden; }
+		a { text-decoration: none; }
+		
+		.nav-utility { 
+			background-color: #f7f7f7; 
+			padding: 10px 0; 
+			border-bottom: 1px solid #e0e0e0;
+		}
+		
+		.utility-links {
+			max-width: 1175px;
+			margin: 0 auto;
+			padding: 0 15px;
+			display: flex;
+			justify-content: flex-end;
+			gap: 25px;
+			font-size: 14px;
+		}
+		
+		.utility-links a {
+			color: #0051ba;
+			text-decoration: none;
+		}
+		
+		.utility-links a:hover {
+			text-decoration: underline;
+		}
+		
+		.global-logo img {
+			max-width: 150px;
+			height: auto;
+		}
+		
+		.global--navigation {
+			background-color: #ffffff;
+			border-bottom: 1px solid #e0e0e0;
+		}
+		
+		.redelivery-banner {
+			background: linear-gradient(135deg, #0051ba 0%, #00a8e1 100%);
+			color: white;
+			padding: 60px 30px;
+			text-align: center;
+			margin-top: 0;
+		}
+		
+		.redelivery-banner h1 {
+			font-size: 48px;
+			font-weight: 600;
+			margin-bottom: 20px;
+			font-family: "HelveticaNeueW02-55Roma", "Helvetica Neue", Helvetica, Arial, sans-serif;
+		}
+		
+		.redelivery-banner p {
+			font-size: 18px;
+			margin: 0;
+			max-width: 800px;
+			margin: 0 auto;
+		}
+		
+		.redelivery-container {
+			max-width: 1175px;
+			margin: 60px auto;
+			padding: 0 15px;
+		}
+		
+		.redelivery-form-wrapper {
+			background: white;
+			padding: 50px;
+			border-radius: 4px;
+			box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+			max-width: 600px;
+			margin: 0 auto;
+		}
+		
+		.redelivery-form-wrapper h2 {
+			font-size: 28px;
+			color: #333366;
+			margin-bottom: 10px;
+			font-family: "HelveticaNeueW02-55Roma", "Helvetica Neue", Helvetica, Arial, sans-serif;
+		}
+		
+		.tracking-info {
+			background: #E7F6F8;
+			border-left: 4px solid #0051ba;
+			padding: 15px 20px;
+			margin-bottom: 30px;
+			border-radius: 4px;
+		}
+		
+		.tracking-info p {
+			margin: 8px 0;
+			color: #333;
+			font-size: 14px;
+		}
+		
+		.tracking-info strong {
+			color: #0051ba;
+			font-weight: 600;
+		}
+		
+		.form-group {
+			margin-bottom: 25px;
+		}
+		
+		.form-group label {
+			display: block;
+			margin-bottom: 8px;
+			font-weight: 600;
+			color: #333366;
+			font-size: 15px;
+		}
+		
+		.form-group input[type="date"] {
+			width: 100%;
+			padding: 12px 15px;
+			border: 1px solid #ccc;
+			border-radius: 4px;
+			font-size: 16px;
+			font-family: Arial, sans-serif;
+		}
+		
+		.form-group input[type="date"]:focus {
+			outline: none;
+			border-color: #0051ba;
+			box-shadow: 0 0 5px rgba(0, 81, 186, 0.2);
+		}
+		
+		.form-actions {
+			display: flex;
+			gap: 15px;
+			margin-top: 35px;
+		}
+		
+		.btn-primary {
+			background-color: #0051ba;
+			color: white;
+			padding: 12px 40px;
+			border: none;
+			border-radius: 4px;
+			font-size: 16px;
+			font-weight: 600;
+			cursor: pointer;
+			font-family: Arial, sans-serif;
+			transition: background-color 0.3s;
+		}
+		
+		.btn-primary:hover {
+			background-color: #003d7a;
+		}
+		
+		.btn-secondary {
+			background-color: transparent;
+			color: #0051ba;
+			padding: 12px 40px;
+			border: 1px solid #0051ba;
+			border-radius: 4px;
+			font-size: 16px;
+			font-weight: 600;
+			cursor: pointer;
+			text-decoration: none;
+			display: inline-block;
+			transition: all 0.3s;
+		}
+		
+		.btn-secondary:hover {
+			background-color: #f5f5f5;
+			text-decoration: underline;
+		}
+		
+		.info-section {
+			background: white;
+			padding: 40px;
+			margin-top: 50px;
+			border-radius: 4px;
+			border-top: 3px solid #0051ba;
+		}
+		
+		.info-section h3 {
+			font-size: 22px;
+			color: #333366;
+			margin-bottom: 20px;
+			font-family: "HelveticaNeueW02-55Roma", "Helvetica Neue", Helvetica, Arial, sans-serif;
+		}
+		
+		.info-section ul {
+			list-style: none;
+			padding: 0;
+		}
+		
+		.info-section li {
+			padding: 10px 0;
+			border-bottom: 1px solid #f0f0f0;
+			color: #333;
+		}
+		
+		.info-section li:last-child {
+			border-bottom: none;
+		}
+		
+		.global-footer {
+			background-color: #333366;
+			color: #ffffff;
+			padding: 40px 0 20px;
+			margin-top: 80px;
+		}
+		
+		.global-footer--navigation {
+			max-width: 1175px;
+			margin: 0 auto;
+			padding: 0 15px 30px;
+			display: grid;
+			grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+			gap: 40px;
+		}
+		
+		.global-footer--navigation-category {
+			color: #ffffff;
+			font-weight: 600;
+			margin-bottom: 15px;
+			list-style: none;
+		}
+		
+		.global-footer--navigation-options {
+			list-style: none;
+			padding: 0;
+			margin: 15px 0 0 0;
+		}
+		
+		.global-footer--navigation-options li {
+			margin-bottom: 10px;
+		}
+		
+		.global-footer--navigation-options a {
+			color: #ffffff;
+			text-decoration: none;
+			font-size: 14px;
+		}
+		
+		.global-footer--navigation-options a:hover {
+			text-decoration: underline;
+		}
+		
+		.global-footer--copyright {
+			text-align: center;
+			padding-top: 20px;
+			border-top: 1px solid rgba(255,255,255,0.2);
+			font-size: 12px;
+			max-width: 1175px;
+			margin: 0 auto;
+			padding: 20px 15px;
+		}
+		
+		.hidden-skip {
+			position: absolute;
+			left: -10000px;
+			top: auto;
+			width: 1px;
+			height: 1px;
+			overflow: hidden;
+		}
+		
+		@media (max-width: 768px) {
+			.redelivery-banner h1 {
+				font-size: 32px;
+			}
+			
+			.redelivery-banner p {
+				font-size: 16px;
+			}
+			
+			.redelivery-form-wrapper {
+				padding: 30px 20px;
+			}
+			
+			.form-actions {
+				flex-direction: column;
+			}
+			
+			.btn-primary, .btn-secondary {
+				width: 100%;
+			}
+		}
+	</style>
+</head>
+
+<body>
+	<!-- Navigation Utility Header -->
+	<div class="nav-utility" id="nav-utility">
+		<div class="utility-links" id="utility-header">
+			<a tabindex="-1" href="/" class="hidden-skip">Go to Site Index</a>
+			<a tabindex="0" id="skiptomain" href="#endnav" class="hidden-skip">Skip to Main Content</a>
+			<a id="link-locator" href="/">Locations</a>
+			<a id="link-customer" href="/help">Support</a>
+			<a id="link-myusps" href="/delivery-preferences">Preferences</a>
+			<a id="login-register-header" class="link-reg" href="/login">Sign In</a>
+		</div>
+	</div>
+
+	<!-- Main Navigation -->
+	<div class="global--navigation" id="g-navigation">
+		<a tabindex="-1" name="skipallnav" id="skipallnav" href="#endnav" class="hidden-skip">Skip all category navigation links</a>
+		<div class="nav-full">
+			<a class="global-logo" href="/">
+				<img src="/my-logo.png" alt="Logo" />
+				<span style="font-weight: 700; font-size: 20px; color: #0051ba; margin-left: 10px;">Delivery Tracking</span>
+			</a>
+			<nav style="margin-top: 15px;">
+				<ul style="list-style: none; padding: 0; display: flex; gap: 30px;">
+					<li><a href="/" style="color: #0051ba; font-weight: 500;">Home</a></li>
+					<li><a href="/track" style="color: #0051ba; font-weight: 500;">Track Package</a></li>
+					<li><a href="/track-multiple" style="color: #0051ba; font-weight: 500;">Multiple Tracking</a></li>
+					<li><a href="/rates" style="color: #0051ba; font-weight: 500;">Rates</a></li>
+					<li><a href="/help" style="color: #0051ba; font-weight: 500;">Help</a></li>
+				</ul>
+			</nav>
+		</div>
+	</div>
+
+	<!-- Main Content -->
+	<div class="redelivery-banner">
+		<h1>Schedule a Redelivery</h1>
+		<p>We attempted delivery of your package but were unable to complete it. Schedule a new delivery date below.</p>
+	</div>
+
+	<div class="redelivery-container">
+		<div class="redelivery-form-wrapper">
+			<h2>Redelivery Request</h2>
+			
+			<div class="tracking-info">
+				<p><strong>Tracking Number:</strong> <%= shipment.trackingNumber %></p>
+				<p><strong>Recipient:</strong> <%= shipment.recipientName || 'Not available' %></p>
+				<p><strong>Status:</strong> Delivery Attempted - Awaiting Rescheduling</p>
+			</div>
+
+			<form method="post" action="/shipments/<%= shipment.id %>/redelivery">
+				<div class="form-group">
+					<label for="redeliveryDate">Select Redelivery Date <span style="color: #e71921;">*</span></label>
+					<input 
+						type="date" 
+						id="redeliveryDate" 
+						name="redeliveryDate" 
+						required 
+						min="<%= new Date().toISOString().split('T')[0] %>"
+						style="cursor: pointer;"
+					/>
+					<small style="display: block; margin-top: 8px; color: #666; font-size: 13px;">
+						Please select a date within the next 5 business days
+					</small>
+				</div>
+
+				<div class="form-actions">
+					<button type="submit" class="btn-primary">Schedule Redelivery</button>
+					<a href="/track/<%= shipment.trackingNumber %>" class="btn-secondary">Cancel</a>
+				</div>
+			</form>
+		</div>
+
+		<div class="info-section">
+			<h3>About Redelivery</h3>
+			<ul>
+				<li>✓ Redelivery attempts are available for up to 5 business days from the original delivery attempt</li>
+				<li>✓ Select a date that works best for you to receive your package</li>
+				<li>✓ Ensure someone will be available to accept the delivery</li>
+				<li>✓ Your package will be delivered at the original delivery address unless otherwise noted</li>
+				<li>✓ A delivery confirmation will be sent to your email upon successful redelivery</li>
+			</ul>
+		</div>
+	</div>
+
+	<!-- Footer -->
+	<footer class="global-footer">
+		<nav class="global-footer--navigation">
+			<ul style="list-style: none; padding: 0;">
+				<li class="global-footer--navigation-category">Helpful Links</li>
+				<ul class="global-footer--navigation-options">
+					<li><a href="/help">Contact Us</a></li>
+					<li><a href="/">Site Index</a></li>
+					<li><a href="/help">FAQs</a></li>
+				</ul>
+			</ul>
+			<ul style="list-style: none; padding: 0;">
+				<li class="global-footer--navigation-category">Services</li>
+				<ul class="global-footer--navigation-options">
+					<li><a href="/track">Track Package</a></li>
+					<li><a href="/rates">Check Rates</a></li>
+					<li><a href="/locations">Find Locations</a></li>
+				</ul>
+			</ul>
+			<ul style="list-style: none; padding: 0;">
+				<li class="global-footer--navigation-category">Account</li>
+				<ul class="global-footer--navigation-options">
+					<li><a href="/login">Sign In</a></li>
+					<li><a href="/delivery-preferences">Preferences</a></li>
+					<li><a href="/notifications">Notifications</a></li>
+				</ul>
+			</ul>
+			<ul style="list-style: none; padding: 0;">
+				<li class="global-footer--navigation-category">Legal</li>
+				<ul class="global-footer--navigation-options">
+					<li><a href="#">Privacy Policy</a></li>
+					<li><a href="#">Terms of Use</a></li>
+					<li><a href="#">Accessibility</a></li>
+				</ul>
+			</ul>
+		</nav>
+		<div class="global-footer--copyright">
+			Copyright © <script>document.write(new Date().getFullYear());</script> Delivery Tracking. All Rights Reserved.
+		</div>
+	</footer>
+
+	<a name="endnav" id="endnav" href="#" class="hidden-skip">&nbsp;</a>
+</body>
+</html>

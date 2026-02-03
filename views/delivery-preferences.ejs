@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1e40af" />
+  <title>Delivery Preferences</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="stylesheet" href="/css/usps-theme.css" />
+  <link rel="stylesheet" href="/css/responsive-improvements.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-bar">
+      <a class="brand" href="/">
+        <img src="/my-logo.png" alt="Logo" class="brand-logo" />
+      </a>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/track">Track</a>
+        <a href="/track-multiple">Multiple Tracking</a>
+        <a href="/rates">Rates</a>
+        <a href="/help">Help</a>
+      </nav>
+    </div>
+  </header>
+      <a href="/">Home</a>
+      <a href="/track-multiple">Track Multiple</a>
+      <a href="/rates">Rates</a>
+      <a href="/locations">Locations</a>
+      <a href="/help">Help</a>
+      <a href="/admin/shipments">Admin</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <section class="card">
+    <h2>Delivery Preferences</h2>
+    <p>Tracking: <strong><%= shipment.trackingNumber %></strong></p>
+    <p>Customize how you'd like to receive this package</p>
+
+    <form method="post" action="/shipments/<%= shipment.id %>/preferences" class="preferences-form">
+      <div class="form-group">
+        <label>
+          <input type="checkbox" name="holdForPickup" <%= shipment.deliveryPreferences?.holdForPickup ? 'checked' : '' %> />
+          <strong>Hold for Pickup</strong> — Pick up at nearest location instead of home delivery
+        </label>
+      </div>
+
+      <div class="form-group">
+        <label>
+          <input type="checkbox" name="signatureRequired" <%= shipment.deliveryPreferences?.signatureRequired ? 'checked' : '' %> />
+          <strong>Require Signature</strong> — Package requires signature on delivery
+        </label>
+      </div>
+
+      <div class="form-group">
+        <label for="deliveryInstructions"><strong>Delivery Instructions</strong></label>
+        <textarea id="deliveryInstructions" name="deliveryInstructions" rows="3" placeholder="e.g., Leave at side door, Call on arrival"><%= shipment.deliveryPreferences?.deliveryInstructions || '' %></textarea>
+      </div>
+
+      <div class="form-group">
+        <label for="safePlaceLocation"><strong>Safe Place Location</strong></label>
+        <input id="safePlaceLocation" name="safePlaceLocation" placeholder="e.g., Front porch, Garage" value="<%= shipment.deliveryPreferences?.safePlaceLocation || '' %>" />
+      </div>
+
+      <div class="form-actions">
+        <button type="submit">Save Preferences</button>
+        <a href="/track/<%= shipment.trackingNumber %>" class="btn-secondary">Cancel</a>
+      </div>
+    </form>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container">© ParcelTrack</div>
+</footer>
+</body>
+</html>

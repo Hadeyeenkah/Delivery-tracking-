@@ -1,0 +1,462 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Track</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="stylesheet" href="/css/usps-theme.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-bar">
+      <a class="brand" href="/">
+        <img src="/my-logo.png" alt="Logo" class="brand-logo" />
+      </a>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/track" class="active">Track</a>
+        <a href="/track-multiple">Multiple Tracking</a>
+        <a href="/rates">Rates</a>
+        <a href="/help">Help</a>
+      </nav>
+    </div>
+  </header>
+
+  <main class="container">
+    <% if (!shipment) { %>
+      <!-- Track Package Form -->
+      <section class="tracking-form" style="max-width: 700px; margin: 60px auto; padding: 50px 40px; background: white; border-radius: 12px; box-shadow: 0 4px 20px rgba(0,0,0,0.08);">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <div style="width: 80px; height: 80px; background: linear-gradient(135deg, #333366 0%, #005EA2 100%); border-radius: 50%; margin: 0 auto 20px; display: flex; align-items: center; justify-content: center; font-size: 40px;">📦</div>
+          <h2 style="color: #333366; font-size: 32px; margin: 0 0 10px 0; font-weight: 400;">Track Your Package</h2>
+          <p style="color: #666; font-size: 16px; margin: 0;">Enter your tracking number to get real-time updates</p>
+        </div>
+        
+        <form method="post" action="/track">
+          <div class="form-group">
+            <label for="trackingNumber" style="display: block; margin-bottom: 10px; color: #333; font-weight: 600; font-size: 15px;">Tracking Number</label>
+            <input 
+              type="text" 
+              id="trackingNumber"
+              name="trackingNumber" 
+              placeholder="Enter tracking number (e.g., ST123456789)" 
+              required 
+              style="width: 100%; padding: 15px 20px; border: 2px solid #ddd; border-radius: 8px; font-size: 16px; transition: all 0.3s; font-family: 'Courier New', monospace; letter-spacing: 1px;"
+              onfocus="this.style.borderColor='#005EA2'; this.style.boxShadow='0 0 0 3px rgba(0,94,162,0.1)'"
+              onblur="this.style.borderColor='#ddd'; this.style.boxShadow='none'"
+            />
+            <p style="margin: 8px 0 0 0; font-size: 13px; color: #999;">Example: ST123456789, ST987654321</p>
+          </div>
+          
+          <button type="submit" class="btn-usps" style="width: 100%; padding: 16px; font-size: 18px; margin-top: 25px; cursor: pointer;">
+            🔍 Track Package
+          </button>
+        </form>
+        
+        <div style="margin-top: 40px; padding-top: 30px; border-top: 1px solid #e0e0e0;">
+          <h3 style="color: #333366; font-size: 18px; margin: 0 0 15px 0; font-weight: 500;">Need Help?</h3>
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px;">
+            <a href="/track-multiple" style="text-align: center; padding: 15px; background: #f7f7f7; border-radius: 8px; text-decoration: none; color: #333366; transition: all 0.3s;" onmouseover="this.style.background='#E7F6F8'" onmouseout="this.style.background='#f7f7f7'">
+              <div style="font-size: 24px; margin-bottom: 5px;">📋</div>
+              <div style="font-size: 13px; font-weight: 600;">Track Multiple</div>
+            </a>
+            <a href="/help" style="text-align: center; padding: 15px; background: #f7f7f7; border-radius: 8px; text-decoration: none; color: #333366; transition: all 0.3s;" onmouseover="this.style.background='#E7F6F8'" onmouseout="this.style.background='#f7f7f7'">
+              <div style="font-size: 24px; margin-bottom: 5px;">❓</div>
+              <div style="font-size: 13px; font-weight: 600;">Help Center</div>
+            </a>
+            <a href="/support" style="text-align: center; padding: 15px; background: #f7f7f7; border-radius: 8px; text-decoration: none; color: #333366; transition: all 0.3s;" onmouseover="this.style.background='#E7F6F8'" onmouseout="this.style.background='#f7f7f7'">
+              <div style="font-size: 24px; margin-bottom: 5px;">💬</div>
+              <div style="font-size: 13px; font-weight: 600;">Contact Support</div>
+            </a>
+          </div>
+        </div>
+      </section>
+    <% } else { %>
+      <!-- Tracking Number and Progress Bar -->
+      <section style="background: #f8f9fa; padding: 24px; margin-bottom: 24px; border-bottom: 2px solid #333;">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 24px;">
+          <div>
+            <p style="margin: 0 0 4px 0; color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Tracking Number</p>
+            <h1 style="margin: 0; font-size: 24px; font-family: 'Courier New', monospace; font-weight: 600; letter-spacing: 1px;"><%= shipment.trackingNumber %></h1>
+          </div>
+          <div style="text-align: right;">
+            <p style="margin: 0 0 4px 0; color: #666; font-size: 12px; text-transform: uppercase; letter-spacing: 0.5px;">Status</p>
+            <div id="statusBadge" class="status-badge status-<%= shipment.currentStatus.toLowerCase().replace(/\s+/g, '-') %>" style="font-size: 14px; padding: 8px 16px; display: inline-block; background: #333; color: white; border-radius: 0;"><%= shipment.currentStatus %></div>
+          </div>
+        </div>
+
+        <!-- Truck Progress Indicator -->
+        <% 
+          const statusStages = [
+            { status: 'Pre-Shipment', label: 'Label Created' },
+            { status: 'Accepted', label: 'USPS Accepted' },
+            { status: 'In Transit', label: 'In Transit' },
+            { status: 'Out for Delivery', label: 'Out for Delivery' },
+            { status: 'Delivered', label: 'Delivered' }
+          ];
+          
+          let currentStageIndex = 0;
+          const currentStatus = shipment.currentStatus;
+          
+          if (currentStatus === 'Delivered') currentStageIndex = 4;
+          else if (currentStatus === 'Out for Delivery') currentStageIndex = 3;
+          else if (currentStatus === 'In Transit') currentStageIndex = 2;
+          else if (currentStatus === 'Package Received' || currentStatus === 'Accepted') currentStageIndex = 1;
+          else currentStageIndex = 0;
+          
+          const progressPercent = (currentStageIndex / (statusStages.length - 1)) * 100;
+        %>
+
+        <div id="trackingProgressContainer" style="position: relative; height: 60px; margin-bottom: 12px;">
+          <!-- Background Track -->
+          <div style="position: absolute; top: 30px; left: 30px; right: 30px; height: 2px; background: #ddd; border-radius: 1px;"></div>
+          
+          <!-- Active Progress -->
+          <div id="trackingProgressBar" style="position: absolute; top: 30px; left: 30px; height: 2px; width: calc(<%= progressPercent %>% - 30px); background: #333; border-radius: 1px; transition: width 1s ease-in-out;"></div>
+          
+          <!-- Truck Icon -->
+          <div id="truckContainer" style="position: absolute; top: 0; left: calc(<%= progressPercent %>% - 0px); transform: translateX(-50%); transition: left 1s ease-in-out;">
+            <div style="font-size: 30px; filter: drop-shadow(0 2px 4px rgba(0,0,0,0.1));">
+              <% if (currentStageIndex >= 4) { %>
+                <span id="truckIcon" style="display: inline-block;">✓</span>
+              <% } else { %>
+                <span id="truckIcon" style="display: inline-block; transform: scaleX(-1);">🚚</span>
+              <% } %>
+            </div>
+          </div>
+          
+          <!-- Stage Markers -->
+          <% statusStages.forEach((stage, idx) => { %>
+            <div style="position: absolute; top: 24px; left: calc(<%= (idx / (statusStages.length - 1)) * 100 %>%); transform: translateX(-50%);">
+              <div id="stageMarker<%= idx %>" style="width: 12px; height: 12px; border-radius: 50%; background: <%= idx <= currentStageIndex ? '#333' : '#ddd' %>; border: 2px solid white; box-shadow: 0 1px 3px rgba(0,0,0,0.1); transition: background 0.3s ease; z-index: 2; position: relative;"></div>
+            </div>
+          <% }) %>
+        </div>
+        
+        <!-- Stage Labels -->
+        <div id="trackingLabels" style="display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; padding: 0 10px;">
+          <% statusStages.forEach((stage, idx) => { %>
+            <div id="stageLabel<%= idx %>" style="text-align: center;">
+              <div id="stageLabelText<%= idx %>" style="font-size: 11px; line-height: 1.4; color: <%= idx <= currentStageIndex ? '#333' : '#999' %>; font-weight: <%= idx <= currentStageIndex ? '600' : '400' %>;">
+                <%= stage.label %>
+              </div>
+              <% if (idx === currentStageIndex && shipment.statusHistory && shipment.statusHistory.length > 0) { %>
+                <div id="stageLabelDate<%= idx %>" style="font-size: 9px; color: #999; margin-top: 2px;">
+                  <%= new Date(shipment.statusHistory[shipment.statusHistory.length - 1].at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' }) %>
+                </div>
+              <% } %>
+            </div>
+          <% }) %>
+        </div>
+      </section>
+
+      <!-- Shipment Details -->
+      <section style="background: white; padding: 24px; margin-bottom: 24px; border: 1px solid #ddd;">
+        <h2 style="margin: 0 0 24px 0; font-size: 16px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; border-bottom: 2px solid #333; padding-bottom: 12px;">Shipment Details</h2>
+        
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin-bottom: 32px;">
+          <!-- Shipped From -->
+          <div>
+            <p style="margin: 0 0 12px 0; color: #666; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Shipped From</p>
+            <p style="margin: 0 0 4px 0; font-size: 16px; font-weight: 600;"><%= (shipment.sender && shipment.sender.name) || shipment.senderName || 'Unknown' %></p>
+            <p style="margin: 0; font-size: 14px; color: #333; line-height: 1.6;"><%= (shipment.sender && shipment.sender.address) || shipment.senderAddress || '' %></p>
+            <p style="margin: 4px 0 0 0; font-size: 14px; color: #333;"><%= shipment.senderCity %>, <%= shipment.senderState %> <%= shipment.senderZip %></p>
+          </div>
+
+          <!-- Shipping To -->
+          <div>
+            <p style="margin: 0 0 12px 0; color: #666; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Shipping To</p>
+            <p style="margin: 0 0 4px 0; font-size: 16px; font-weight: 600;"><%= (shipment.recipient && shipment.recipient.name) || shipment.recipientName || 'Unknown' %></p>
+            <p style="margin: 0; font-size: 14px; color: #333; line-height: 1.6;"><%= (shipment.recipient && shipment.recipient.address) || shipment.recipientAddress || '' %></p>
+            <p style="margin: 4px 0 0 0; font-size: 14px; color: #333;"><%= shipment.recipientCity %>, <%= shipment.recipientState %> <%= shipment.recipientZip %></p>
+          </div>
+        </div>
+
+        <!-- Package Info and Delivery -->
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 40px;">
+          <!-- Package Info -->
+          <div>
+            <p style="margin: 0 0 12px 0; color: #666; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">Package Info</p>
+            <p style="margin: 0 0 8px 0; font-size: 14px;"><span style="color: #666;">Weight:</span> <strong><%= (shipment.weightKg * 2.20462).toFixed(2) %> lbs</strong></p>
+            <p style="margin: 0; font-size: 14px;"><span style="color: #666;">Postage:</span> <strong>$<%= shipment.rate.toFixed(2) %></strong></p>
+          </div>
+
+          <!-- Estimated Delivery -->
+          <div>
+            <p style="margin: 0 0 12px 0; color: #666; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; font-weight: 600;">
+              <% if (shipment.currentStatus === 'Delivered') { %>Delivery Date<% } else { %>Estimated Delivery<% } %>
+            </p>
+            <% if (shipment.currentStatus === 'Delivered' && shipment.deliveredAt) { %>
+              <p style="margin: 0 0 4px 0; font-size: 16px; font-weight: 600;"><%= new Date(shipment.deliveredAt).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }) %></p>
+              <p style="margin: 0; font-size: 13px; color: #27ae60;">✓ Delivered</p>
+            <% } else if (shipment.estimatedDelivery) { %>
+              <p style="margin: 0 0 4px 0; font-size: 16px; font-weight: 600;"><%= new Date(shipment.estimatedDelivery).toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' }) %></p>
+              <p style="margin: 0; font-size: 13px; color: #666;">Expected delivery date</p>
+            <% } else { %>
+              <p style="margin: 0; font-size: 14px; color: #666;">In transit</p>
+            <% } %>
+          </div>
+        </div>
+      </section>
+
+      <!-- Delivery Preferences & Services -->
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
+        <!-- Delivery Preferences -->
+        <section class="card">
+          <h3 style="margin-top: 0;">Delivery Preferences</h3>
+          <% 
+            const prefs = shipment.deliveryPreferences;
+            const hasPrefs = prefs && (prefs.holdForPickup || prefs.signatureRequired || prefs.deliveryInstructions || prefs.safePlaceLocation);
+          %>
+          <% if (hasPrefs) { %>
+            <div style="display: flex; flex-direction: column; gap: 8px;">
+              <% if (prefs.holdForPickup) { %>
+                <div style="padding: 10px; background: #eff6ff; border-radius: 6px; border-left: 3px solid var(--accent);">
+                  <p style="margin: 0; font-size: 14px;"><strong>✓ Hold for Pickup</strong></p>
+                  <p style="margin: 4px 0 0 0; color: var(--muted); font-size: 13px;">At nearest SwiftTrack location</p>
+                </div>
+              <% } %>
+              <% if (prefs.signatureRequired) { %>
+                <div style="padding: 10px; background: #eff6ff; border-radius: 6px; border-left: 3px solid var(--accent);">
+                  <p style="margin: 0; font-size: 14px;"><strong>✓ Signature Required</strong></p>
+                </div>
+              <% } %>
+              <% if (prefs.deliveryInstructions) { %>
+                <div style="padding: 10px; background: #f9fafb; border-radius: 6px;">
+                  <p style="margin: 0; color: var(--muted); font-size: 12px; text-transform: uppercase; font-weight: 600;">Instructions</p>
+                  <p style="margin: 4px 0 0 0; font-size: 14px;"><%= prefs.deliveryInstructions %></p>
+                </div>
+              <% } %>
+              <% if (prefs.safePlaceLocation) { %>
+                <div style="padding: 10px; background: #f9fafb; border-radius: 6px;">
+                  <p style="margin: 0; color: var(--muted); font-size: 12px; text-transform: uppercase; font-weight: 600;">Safe Place Location</p>
+                  <p style="margin: 4px 0 0 0; font-size: 14px;"><%= prefs.safePlaceLocation %></p>
+                </div>
+              <% } %>
+              <a href="/shipments/<%= shipment.id %>/preferences" class="btn-small" style="margin-top: 8px;">⚙️ Edit Preferences</a>
+            </div>
+          <% } else { %>
+            <p style="color: var(--muted); margin: 0;">No delivery preferences set.</p>
+            <a href="/shipments/<%= shipment.id %>/preferences" class="btn-small" style="margin-top: 12px;">Set Delivery Preferences</a>
+          <% } %>
+        </section>
+
+        <!-- Actions -->
+        <section class="card">
+          <h3 style="margin-top: 0;">Quick Actions</h3>
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            <a href="/label/<%= shipment.id %>" target="_blank" style="padding: 10px 14px; background: var(--accent); color: white; text-decoration: none; border-radius: 6px; text-align: center; font-size: 14px; font-weight: 600;">🏷️ Print Shipping Label</a>
+            <a href="/shipments/<%= shipment.id %>/notifications" style="padding: 10px 14px; background: #f9fafb; color: var(--accent); text-decoration: none; border-radius: 6px; text-align: center; font-size: 14px; font-weight: 600; border: 2px solid var(--accent);">🔔 Get Updates</a>
+            <% if (shipment.currentStatus === 'Delivery Failed') { %>
+              <a href="/shipments/<%= shipment.id %>/redelivery" style="padding: 10px 14px; background: var(--accent-red); color: white; text-decoration: none; border-radius: 6px; text-align: center; font-size: 14px; font-weight: 600;">📅 Schedule Redelivery</a>
+            <% } %>
+            <a href="/support" style="padding: 10px 14px; background: #f9fafb; color: var(--text); text-decoration: none; border-radius: 6px; text-align: center; font-size: 14px; font-weight: 600; border: 2px solid var(--border);">💬 Contact Support</a>
+          </div>
+        </section>
+      </div>
+
+      <!-- Real-time Updates Script -->
+      <script>
+      (function(){
+        var tn = '<%= shipment ? shipment.trackingNumber : trackingNumber %>';
+        if (!tn || !<%= !!shipment %>) return;
+        
+        // Complete status to stage mapping
+        // Admin can set ANY of these statuses and the truck will move accordingly
+        var statusToStage = {
+          'Label Created': 0,
+          'Pre-Shipment': 0,
+          'Accepted': 1,
+          'Package Received': 1,
+          'In Transit': 2,
+          'Out for Delivery': 3,
+          'Delivery Failed': 3.5,
+          'Returned to Sender': 2,
+          'Delivered': 4
+        };
+        
+        function getStageIndex(status) {
+          console.log('Mapping status:', status);
+          var stageIndex = statusToStage[status];
+          if (stageIndex === undefined) {
+            console.warn('Unknown status:', status, 'defaulting to stage 0');
+            return 0;
+          }
+          console.log('Mapped to stage index:', stageIndex);
+          return stageIndex;
+        }
+        
+        function updateTruckProgress(currentStatus, statusHistory) {
+          var currentStageIndex = getStageIndex(currentStatus);
+          var progressPercent = (currentStageIndex / 4) * 100;
+          
+          console.log('🚚 ADMIN UPDATE - Moving truck to stage:', currentStageIndex, 'Status:', currentStatus, 'Progress:', progressPercent + '%');
+          
+          // Update progress bar width
+          var progressBar = document.getElementById('trackingProgressBar');
+          if (progressBar) {
+            progressBar.style.width = 'calc(' + progressPercent + '% - 30px)';
+            console.log('✓ Progress bar updated to:', progressBar.style.width);
+          } else {
+            console.warn('✗ Progress bar not found');
+          }
+          
+          // Update truck container position
+          var truckContainer = document.getElementById('truckContainer');
+          if (truckContainer) {
+            truckContainer.style.left = 'calc(' + progressPercent + '% - 0px)';
+            console.log('✓ Truck moved to:', truckContainer.style.left);
+          } else {
+            console.warn('✗ Truck container not found');
+          }
+          
+          // Update truck icon
+          var truckIcon = document.getElementById('truckIcon');
+          if (truckIcon) {
+            if (currentStageIndex >= 4) {
+              truckIcon.innerHTML = '🎉';
+              truckIcon.style.transform = 'scaleX(1)';
+            } else if (currentStatus === 'Delivery Failed' || currentStatus === 'Returned to Sender') {
+              truckIcon.innerHTML = '⚠️';
+              truckIcon.style.transform = 'scaleX(1)';
+            } else {
+              truckIcon.innerHTML = '🚚';
+              truckIcon.style.transform = 'scaleX(-1)';
+            }
+            console.log('✓ Truck icon updated to:', truckIcon.innerHTML);
+          } else {
+            console.warn('✗ Truck icon not found');
+          }
+          
+          // Update stage markers (0-4)
+          for (var i = 0; i <= 4; i++) {
+            var marker = document.getElementById('stageMarker' + i);
+            if (marker) {
+              if (i <= Math.floor(currentStageIndex)) {
+                marker.style.width = '16px';
+                marker.style.height = '16px';
+                marker.style.background = i === Math.floor(currentStageIndex) ? '#22c55e' : '#0A7CC1';
+                marker.style.border = '3px solid #fff';
+                marker.style.boxShadow = '0 3px 8px rgba(34,197,94,0.3)';
+              } else {
+                marker.style.width = '14px';
+                marker.style.height = '14px';
+                marker.style.background = '#e5e7eb';
+                marker.style.border = '3px solid #f3f4f6';
+                marker.style.boxShadow = '0 2px 4px rgba(0,0,0,0.1)';
+              }
+            }
+          }
+          
+          // Update stage labels (0-4)
+          for (var i = 0; i <= 4; i++) {
+            var labelText = document.getElementById('stageLabelText' + i);
+            if (labelText) {
+              if (i === Math.floor(currentStageIndex)) {
+                labelText.style.color = '#22c55e';
+                labelText.style.fontWeight = '700';
+              } else if (i < currentStageIndex) {
+                labelText.style.color = '#0A7CC1';
+                labelText.style.fontWeight = '600';
+              } else {
+                labelText.style.color = '#9ca3af';
+                labelText.style.fontWeight = '500';
+              }
+            }
+            
+            // Update date display
+            var labelDate = document.getElementById('stageLabelDate' + i);
+            if (labelDate) {
+              if (i === Math.floor(currentStageIndex) && statusHistory && statusHistory.length > 0) {
+                var lastUpdate = statusHistory[statusHistory.length - 1];
+                labelDate.textContent = new Date(lastUpdate.at).toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+                labelDate.style.display = 'block';
+              } else {
+                labelDate.style.display = 'none';
+              }
+            }
+          }
+        }
+        
+        var es = new EventSource('/events/' + encodeURIComponent(tn));
+        es.onmessage = function(ev){
+          try {
+            var s = JSON.parse(ev.data);
+            console.log('📦 Received update from admin:', s.currentStatus);
+            
+            // Update status badge
+            var badge = document.getElementById('statusBadge');
+            if (badge) {
+              badge.textContent = s.currentStatus;
+              badge.className = 'status-badge status-' + s.currentStatus.toLowerCase().replace(/\s+/g, '-');
+              console.log('✓ Status badge updated to:', s.currentStatus);
+            } else {
+              console.warn('✗ Status badge not found');
+            }
+            
+            // Update truck progress indicator - THIS IS THE KEY PART
+            updateTruckProgress(s.currentStatus, s.statusHistory);
+            
+            // Update timeline
+            var cont = document.getElementById('timelineContainer');
+            if (cont) {
+              var html = (s.statusHistory || []).slice().reverse().map(function(h, idx){
+                return '<div class="timeline-item' + (idx===0 ? ' active' : '') + '">' +
+                  '<div class="timeline-marker"></div>' +
+                  '<div class="timeline-content">' +
+                    '<h4>' + h.status + '</h4>' +
+                    '<p class="timeline-date">' + new Date(h.at).toLocaleString('en-US', { month: 'short', day: 'numeric', year: 'numeric', hour: 'numeric', minute: '2-digit', hour12: true }) + '</p>' +
+                    (h.note ? ('<p class="timeline-note">📍 ' + h.note + '</p>') : '') +
+                  '</div></div>';
+              }).join('');
+              cont.innerHTML = html;
+              console.log('✓ Timeline updated with', (s.statusHistory || []).length, 'events');
+            } else {
+              console.warn('✗ Timeline container not found');
+            }
+            
+          } catch(e) {
+            console.error('❌ Error updating shipment:', e);
+          }
+        };
+        
+        es.onerror = function() {
+          console.log('⚠️ EventSource connection error, will retry...');
+        };
+      })();
+
+      function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(function() {
+          alert('Tracking number copied to clipboard');
+        });
+      }
+      </script>
+
+    <% } %>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container">
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; padding: 20px 0;">
+        <div>
+          <h4 style="margin: 0 0 8px 0; font-size: 14px; color: var(--accent); font-weight: 700;">Customer Service</h4>
+          <p style="margin: 0; font-size: 13px;"><a href="/help" style="color: inherit; text-decoration: none;">Help & FAQ</a></p>
+          <p style="margin: 4px 0 0 0; font-size: 13px;"><a href="/support" style="color: inherit; text-decoration: none;">Contact Us</a></p>
+        </div>
+        <div>
+          <h4 style="margin: 0 0 8px 0; font-size: 14px; color: var(--accent); font-weight: 700;">Shipping</h4>
+          <p style="margin: 0; font-size: 13px;"><a href="/shipments/new" style="color: inherit; text-decoration: none;">Create Shipment</a></p>
+          <p style="margin: 4px 0 0 0; font-size: 13px;"><a href="/rates" style="color: inherit; text-decoration: none;">Rates & Services</a></p>
+        </div>
+        <div>
+          <h4 style="margin: 0 0 8px 0; font-size: 14px; color: var(--accent); font-weight: 700;">Locations</h4>
+          <p style="margin: 0; font-size: 13px;"><a href="/locations" style="color: inherit; text-decoration: none;">Find Locations</a></p>
+        </div>
+      </div>
+      <hr style="border: none; border-top: 1px solid var(--border); margin: 20px 0; opacity: 0.5;" />
+      <p style="margin: 0; text-align: center; font-size: 13px; color: var(--muted);">© 2026 Express Delivery Services. All Rights Reserved.</p>
+    </div>
+  </footer>
+</body>
+</html>

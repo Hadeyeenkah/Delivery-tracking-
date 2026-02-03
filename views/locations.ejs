@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1e40af" />
+  <title>Locations</title>
+  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="stylesheet" href="/css/usps-theme.css" />
+  <link rel="stylesheet" href="/css/responsive-improvements.css" />
+</head>
+<body>
+  <header class="site-header">
+    <div class="container header-bar">
+      <a class="brand" href="/">
+        <img src="/my-logo.png" alt="Logo" class="brand-logo" />
+      </a>
+      <nav>
+        <a href="/">Home</a>
+        <a href="/track">Track</a>
+        <a href="/track-multiple">Multiple Tracking</a>
+        <a href="/rates">Rates</a>
+        <a href="/help">Help</a>
+      </nav>
+    </div>
+  </header>
+      <a href="/">Home</a>
+      <a href="/rates">Rates</a>
+      <a href="/locations" class="active">Locations</a>
+      <a href="/admin/shipments">Admin</a>
+    </nav>
+  </div>
+</header>
+
+<main class="container">
+  <!-- Page Header -->
+  <div style="background: linear-gradient(135deg, #f9fafb 0%, #ffffff 100%); padding: 2rem; border-radius: 12px; margin-bottom: 2rem; border-left: 4px solid var(--accent);">
+    <h1 style="margin: 0 0 0.5rem 0; color: var(--accent); font-size: 2rem;">Find SwiftTrack Locations</h1>
+    <p style="margin: 0; color: #6b7280; font-size: 1.1rem;">Locate Post Offices, collection boxes, and other USPS services near you</p>
+  </div>
+
+  <!-- Search Section -->
+  <section class="card" style="margin-bottom: 2rem;">
+    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid #e5e7eb;">
+      <div style="width: 48px; height: 48px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;">📍</div>
+      <div>
+        <h2 style="margin: 0; color: var(--accent);">Location Search</h2>
+        <p style="margin: 0; color: #6b7280; font-size: 0.95rem;">Enter your address or ZIP code to find nearby SwiftTrack facilities</p>
+      </div>
+    </div>
+
+    <form id="locationSearch" style="display: grid; gap: 1.5rem;">
+      <div style="display: grid; grid-template-columns: 1fr auto; gap: 1rem; align-items: start;">
+        <div>
+          <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Address, City, State or ZIP Code</label>
+          <input 
+            type="text" 
+            id="searchInput" 
+            placeholder="e.g., 123 Main St, New York, NY 10001" 
+            style="width: 100%; padding: 0.875rem; border: 2px solid #d1d5db; border-radius: 6px; font-size: 1rem;"
+          />
+        </div>
+        <div>
+          <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.5rem;">Search Radius</label>
+          <select id="radiusSelect" style="padding: 0.875rem; border: 2px solid #d1d5db; border-radius: 6px; font-size: 1rem; background: white; min-width: 150px;">
+            <option value="5">5 miles</option>
+            <option value="10" selected>10 miles</option>
+            <option value="25">25 miles</option>
+            <option value="50">50 miles</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label style="display: block; font-weight: 600; color: #374151; margin-bottom: 0.75rem;">Filter by Services</label>
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 0.75rem;">
+          <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+            <input type="checkbox" class="filter-checkbox" value="postOffice" checked style="width: 18px; height: 18px; cursor: pointer;">
+            <span>🏢 Post Office</span>
+          </label>
+          <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+            <input type="checkbox" class="filter-checkbox" value="collectionBox" checked style="width: 18px; height: 18px; cursor: pointer;">
+            <span>📮 Collection Box</span>
+          </label>
+          <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+            <input type="checkbox" class="filter-checkbox" value="retailPartner" style="width: 18px; height: 18px; cursor: pointer;">
+            <span>🏪 Retail Partner</span>
+          </label>
+          <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+            <input type="checkbox" class="filter-checkbox" value="atmKiosk" style="width: 18px; height: 18px; cursor: pointer;">
+            <span>🖥️ Self-Service Kiosk</span>
+          </label>
+        </div>
+      </div>
+
+      <button type="submit" style="background: var(--accent); color: white; padding: 1rem 2rem; border: none; border-radius: 6px; font-size: 1.1rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+        <span>🔍</span>
+        <span>Search Locations</span>
+      </button>
+    </form>
+
+    <div id="searchResults" style="margin-top: 2rem; display: none;">
+      <div style="padding: 1rem; background: #dbeafe; border-radius: 6px; border-left: 4px solid var(--accent); margin-bottom: 1rem;">
+        <p style="margin: 0; color: var(--accent); font-weight: 600;">
+          <span id="resultsCount">0</span> locations found within <span id="resultsRadius">10</span> miles
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Quick Access -->
+  <section class="card" style="margin-bottom: 2rem;">
+    <h3 style="margin: 0 0 1.5rem 0; color: var(--accent); font-size: 1.3rem;">Quick Access</h3>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem;">
+      <button onclick="getCurrentLocation()" style="padding: 1.25rem; border: 2px solid #e5e7eb; border-radius: 8px; background: white; cursor: pointer; text-align: left; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='#e5e7eb'">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <div style="width: 40px; height: 40px; background: #dbeafe; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem;">📍</div>
+          <div>
+            <h4 style="margin: 0 0 0.25rem 0; color: var(--accent);">Use My Location</h4>
+            <p style="margin: 0; color: #6b7280; font-size: 0.9rem;">Find nearby SwiftTrack facilities</p>
+          </div>
+        </div>
+      </button>
+
+      <a href="#collection-boxes" style="padding: 1.25rem; border: 2px solid #e5e7eb; border-radius: 8px; background: white; text-decoration: none; display: block; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='#e5e7eb'">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <div style="width: 40px; height: 40px; background: #dcfce7; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem;">📮</div>
+          <div>
+            <h4 style="margin: 0 0 0.25rem 0; color: var(--accent);">Collection Boxes</h4>
+            <p style="margin: 0; color: #6b7280; font-size: 0.9rem;">Drop off mail & packages</p>
+          </div>
+        </div>
+      </a>
+
+      <a href="#after-hours" style="padding: 1.25rem; border: 2px solid #e5e7eb; border-radius: 8px; background: white; text-decoration: none; display: block; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--accent)'" onmouseout="this.style.borderColor='#e5e7eb'">
+        <div style="display: flex; align-items: center; gap: 1rem;">
+          <div style="width: 40px; height: 40px; background: #fef3c7; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.3rem;">🌙</div>
+          <div>
+            <h4 style="margin: 0 0 0.25rem 0; color: var(--accent);">24-Hour Services</h4>
+            <p style="margin: 0; color: #6b7280; font-size: 0.9rem;">Available after hours</p>
+          </div>
+        </div>
+      </a>
+    </div>
+  </section>
+
+  <!-- Locations List -->
+  <section class="card" style="margin-bottom: 2rem;">
+    <div style="display: flex; align-items: center; gap: 1rem; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 2px solid #e5e7eb;">
+      <div style="width: 48px; height: 48px; background: var(--accent-red); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-size: 1.5rem;">🏢</div>
+      <div>
+        <h2 style="margin: 0; color: var(--accent);">Nearby SwiftTrack Locations</h2>
+        <p style="margin: 0; color: #6b7280; font-size: 0.95rem;">Browse all available facilities in your area</p>
+      </div>
+    </div>
+
+    <div id="locationsList" style="display: grid; gap: 1.5rem;">
+      <% locations.forEach((loc, index) => { %>
+        <div class="location-card" style="border: 2px solid #e5e7eb; border-radius: 12px; padding: 1.5rem; background: white; transition: all 0.2s;" onmouseover="this.style.borderColor='var(--accent)'; this.style.boxShadow='0 4px 12px rgba(0,51,102,0.1)'" onmouseout="this.style.borderColor='#e5e7eb'; this.style.boxShadow='none'">
+          <div style="display: grid; grid-template-columns: auto 1fr auto; gap: 1.5rem; align-items: start;">
+            <!-- Number Badge -->
+            <div style="width: 48px; height: 48px; background: var(--accent); border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: 700; font-size: 1.2rem; flex-shrink: 0;">
+              <%= index + 1 %>
+            </div>
+
+            <!-- Location Details -->
+            <div style="flex: 1;">
+              <div style="display: flex; align-items: start; justify-content: space-between; margin-bottom: 0.75rem;">
+                <div>
+                  <h3 style="margin: 0 0 0.5rem 0; color: var(--accent); font-size: 1.3rem;"><%= loc.name %></h3>
+                  <div style="display: flex; align-items: center; gap: 0.5rem; color: #6b7280; margin-bottom: 0.25rem;">
+                    <span style="font-size: 1.1rem;">📍</span>
+                    <span><%= loc.address %>, <%= loc.city %></span>
+                  </div>
+                  <% if (loc.distance) { %>
+                    <p style="margin: 0.25rem 0 0 0; color: #059669; font-size: 0.9rem; font-weight: 600;">
+                      📏 <%= loc.distance %> miles away
+                    </p>
+                  <% } %>
+                </div>
+                <% if (loc.isOpen) { %>
+                  <span style="display: inline-block; padding: 0.375rem 0.75rem; background: #dcfce7; color: #15803d; border-radius: 12px; font-weight: 600; font-size: 0.85rem;">
+                    ✓ Open Now
+                  </span>
+                <% } else { %>
+                  <span style="display: inline-block; padding: 0.375rem 0.75rem; background: #fee2e2; color: #dc2626; border-radius: 12px; font-weight: 600; font-size: 0.85rem;">
+                    ⏰ Closed
+                  </span>
+                <% } %>
+              </div>
+
+              <!-- Hours and Services -->
+              <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1rem;">
+                <div>
+                  <h4 style="margin: 0 0 0.5rem 0; color: #374151; font-size: 0.95rem; font-weight: 600;">Hours of Operation</h4>
+                  <p style="margin: 0; color: #6b7280; line-height: 1.6;"><%= loc.hours %></p>
+                  <% if (loc.saturdayHours) { %>
+                    <p style="margin: 0.25rem 0 0 0; color: #6b7280; line-height: 1.6;">Saturday: <%= loc.saturdayHours %></p>
+                  <% } %>
+                  <% if (loc.sundayHours) { %>
+                    <p style="margin: 0.25rem 0 0 0; color: #6b7280; line-height: 1.6;">Sunday: <%= loc.sundayHours %></p>
+                  <% } %>
+                </div>
+
+                <div>
+                  <h4 style="margin: 0 0 0.5rem 0; color: #374151; font-size: 0.95rem; font-weight: 600;">Available Services</h4>
+                  <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
+                    <span style="display: inline-block; padding: 0.25rem 0.625rem; background: #dbeafe; color: #1e40af; border-radius: 4px; font-size: 0.85rem;">📦 Package Pickup</span>
+                    <span style="display: inline-block; padding: 0.25rem 0.625rem; background: #dbeafe; color: #1e40af; border-radius: 4px; font-size: 0.85rem;">✉️ Mail Services</span>
+                    <% if (loc.hasPoBox) { %>
+                      <span style="display: inline-block; padding: 0.25rem 0.625rem; background: #dbeafe; color: #1e40af; border-radius: 4px; font-size: 0.85rem;">📬 PO Boxes</span>
+                    <% } %>
+                    <% if (loc.hasPassport) { %>
+                      <span style="display: inline-block; padding: 0.25rem 0.625rem; background: #dcfce7; color: #15803d; border-radius: 4px; font-size: 0.85rem;">🛂 Passport Services</span>
+                    <% } %>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Contact and Actions -->
+              <div style="display: flex; flex-wrap: wrap; gap: 1rem; margin-top: 1rem; padding-top: 1rem; border-top: 1px solid #e5e7eb;">
+                <% if (loc.phone) { %>
+                  <a href="tel:<%= loc.phone %>" style="display: flex; align-items: center; gap: 0.5rem; color: var(--accent); text-decoration: none; font-weight: 600; font-size: 0.95rem;">
+                    <span>📞</span>
+                    <span><%= loc.phone %></span>
+                  </a>
+                <% } %>
+                <a href="https://maps.google.com/?q=<%= encodeURIComponent(loc.address + ', ' + loc.city) %>" target="_blank" style="display: flex; align-items: center; gap: 0.5rem; color: var(--accent); text-decoration: none; font-weight: 600; font-size: 0.95rem;">
+                  <span>🗺️</span>
+                  <span>Get Directions</span>
+                </a>
+                <button onclick="schedulePickup('<%= loc.name %>')" style="display: flex; align-items: center; gap: 0.5rem; background: none; border: none; color: var(--accent); font-weight: 600; font-size: 0.95rem; cursor: pointer; padding: 0;">
+                  <span>📅</span>
+                  <span>Schedule Pickup</span>
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      <% }) %>
+    </div>
+  </section>
+
+  <!-- Information Section -->
+  <section class="card" style="background: #fef3c7; border-left: 4px solid #f59e0b;">
+    <h3 style="margin: 0 0 1rem 0; color: #92400e; display: flex; align-items: center; gap: 0.5rem;">
+      <span style="font-size: 1.5rem;">💡</span>
+      <span>Location Services Information</span>
+    </h3>
+    <div style="display: grid; gap: 1rem;">
+      <div>
+        <h4 style="margin: 0 0 0.5rem 0; color: #78350f; font-size: 1rem;">Collection Box Pickup Times</h4>
+        <p style="margin: 0; color: #78350f; line-height: 1.6;">Collection times vary by location. Check the label on each blue collection box for specific pickup schedules. Most boxes have weekday and Saturday collections.</p>
+      </div>
+      <div>
+        <h4 style="margin: 0 0 0.5rem 0; color: #78350f; font-size: 1rem;">Holiday Hours</h4>
+        <p style="margin: 0; color: #78350f; line-height: 1.6;">SwiftTrack facilities are closed on federal holidays. Limited services may be available through retail partners and self-service kiosks.</p>
+      </div>
+      <div>
+        <h4 style="margin: 0 0 0.5rem 0; color: #78350f; font-size: 1rem;">Self-Service Kiosks</h4>
+        <p style="margin: 0; color: #78350f; line-height: 1.6;">Many locations feature 24/7 self-service kiosks (APC) for buying postage, weighing packages, and scheduling pickups outside of regular business hours.</p>
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer class="site-footer">
+  <div class="container" style="padding: 2rem 0;">
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 2rem; margin-bottom: 2rem;">
+      <div>
+        <h4 style="margin: 0 0 1rem 0; color: var(--accent); font-size: 1rem;">Customer Service</h4>
+        <ul style="list-style: none; padding: 0; margin: 0;">
+          <li style="margin-bottom: 0.5rem;"><a href="/support" style="color: #6b7280; text-decoration: none;">Contact Us</a></li>
+          <li style="margin-bottom: 0.5rem;"><a href="/help" style="color: #6b7280; text-decoration: none;">Help & FAQ</a></li>
+          <li style="margin-bottom: 0.5rem;"><a href="/track-multiple" style="color: #6b7280; text-decoration: none;">Track Package</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 style="margin: 0 0 1rem 0; color: var(--accent); font-size: 1rem;">Shipping Services</h4>
+        <ul style="list-style: none; padding: 0; margin: 0;">
+          <li style="margin-bottom: 0.5rem;"><a href="/shipments/new" style="color: #6b7280; text-decoration: none;">Create Shipment</a></li>
+          <li style="margin-bottom: 0.5rem;"><a href="/rates" style="color: #6b7280; text-decoration: none;">Rates & Pricing</a></li>
+          <li style="margin-bottom: 0.5rem;"><a href="/delivery-preferences" style="color: #6b7280; text-decoration: none;">Delivery Preferences</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 style="margin: 0 0 1rem 0; color: var(--accent); font-size: 1rem;">Resources</h4>
+        <ul style="list-style: none; padding: 0; margin: 0;">
+          <li style="margin-bottom: 0.5rem;"><a href="/locations" style="color: #6b7280; text-decoration: none;">Find Locations</a></li>
+          <li style="margin-bottom: 0.5rem;"><a href="/redelivery" style="color: #6b7280; text-decoration: none;">Schedule Redelivery</a></li>
+          <li style="margin-bottom: 0.5rem;"><a href="/notifications" style="color: #6b7280; text-decoration: none;">Get Notifications</a></li>
+        </ul>
+      </div>
+    </div>
+    <div style="text-align: center; padding-top: 2rem; border-top: 1px solid #e5e7eb; color: #6b7280;">
+      © 2026 Express Delivery Services. All Rights Reserved.
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Search functionality
+  document.getElementById('locationSearch').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const searchInput = document.getElementById('searchInput').value;
+    const radius = document.getElementById('radiusSelect').value;
+    
+    if (searchInput.trim()) {
+      // Show results section
+      document.getElementById('searchResults').style.display = 'block';
+      document.getElementById('resultsCount').textContent = '<%= locations.length %>';
+      document.getElementById('resultsRadius').textContent = radius;
+      
+      // Scroll to results
+      document.getElementById('locationsList').scrollIntoView({ behavior: 'smooth' });
+    }
+  });
+
+  // Get current location
+  function getCurrentLocation() {
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(function(position) {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        alert('Location found! Searching for nearby SwiftTrack facilities...\nLatitude: ' + lat + '\nLongitude: ' + lon);
+        // In production, this would make an API call to find nearby locations
+      }, function(error) {
+        alert('Unable to retrieve your location. Please enter your address manually.');
+      });
+    } else {
+      alert('Geolocation is not supported by your browser. Please enter your address manually.');
+    }
+  }
+
+  // Schedule pickup
+  function schedulePickup(locationName) {
+    if (confirm('Would you like to schedule a package pickup at ' + locationName + '?')) {
+      window.location.href = '/shipments/new';
+    }
+  }
+
+  // Filter functionality
+  document.querySelectorAll('.filter-checkbox').forEach(checkbox => {
+    checkbox.addEventListener('change', function() {
+      // In production, this would filter the location cards based on selected services
+      console.log('Filter changed:', this.value, this.checked);
+    });
+  });
+</script>
+</body>
+</html>

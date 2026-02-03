@@ -1,0 +1,226 @@
+[
+  {
+    "id": "8296c74c-639a-4d7d-aae9-e02d77539874",
+    "trackingNumber": "TRK1234567890",
+    "sender": {
+      "name": "Amazon Warehouse",
+      "address": "1234 Industrial Blvd, Seattle, WA"
+    },
+    "recipient": {
+      "name": "John Smith",
+      "address": "456 Oak Street, Portland, OR 97201"
+    },
+    "originCity": "Seattle",
+    "destinationCity": "Portland",
+    "weightKg": 2.5,
+    "distanceKm": 280,
+    "rate": 14.6,
+    "statusHistory": [
+      {
+        "status": "Accepted",
+        "at": "2026-01-07T20:20:36.651Z"
+      },
+      {
+        "status": "In Transit",
+        "at": "2026-01-08T20:20:36.652Z",
+        "note": "Package departed Seattle facility"
+      },
+      {
+        "status": "In Transit",
+        "at": "2026-01-09T20:20:36.653Z",
+        "note": "Arrived at Portland distribution center"
+      },
+      {
+        "status": "Out for Delivery",
+        "at": "2026-01-10T17:20:36.653Z",
+        "note": "Package on delivery vehicle"
+      }
+    ],
+    "currentStatus": "Out for Delivery",
+    "estimatedDelivery": "2026-01-10T20:20:36.653Z",
+    "deliveryPreferences": {},
+    "notifications": [],
+    "createdAt": "2026-01-07T20:20:36.653Z"
+  },
+  {
+    "id": "58eeaa51-0a18-40cd-bf14-11abc4ad1a6c",
+    "trackingNumber": "TRK9876543210",
+    "sender": {
+      "name": "Best Buy Store #342",
+      "address": "789 Commerce Dr, Austin, TX"
+    },
+    "recipient": {
+      "name": "Sarah Johnson",
+      "address": "123 Maple Ave, Dallas, TX 75201"
+    },
+    "originCity": "Austin",
+    "destinationCity": "Dallas",
+    "weightKg": 5.8,
+    "distanceKm": 320,
+    "rate": 19.4,
+    "statusHistory": [
+      {
+        "status": "Accepted",
+        "at": "2026-01-08T20:20:36.653Z"
+      },
+      {
+        "status": "In Transit",
+        "at": "2026-01-09T20:20:36.653Z",
+        "note": "Package in transit to Dallas"
+      }
+    ],
+    "currentStatus": "In Transit",
+    "estimatedDelivery": "2026-01-11T20:20:36.653Z",
+    "deliveryPreferences": {
+      "deliveryInstructions": "Leave at front door"
+    },
+    "notifications": {
+      "email": "sarah@example.com",
+      "emailUpdates": true
+    },
+    "createdAt": "2026-01-08T20:20:36.653Z"
+  },
+  {
+    "id": "2bf343d2-7076-4711-add6-c0971ade1c0c",
+    "trackingNumber": "TRK5555666677",
+    "sender": {
+      "name": "Etsy Seller - HandmadeGoods",
+      "address": "321 Craft Lane, Brooklyn, NY"
+    },
+    "recipient": {
+      "name": "Mike Davis",
+      "address": "987 Pine St, Boston, MA 02108"
+    },
+    "originCity": "New York",
+    "destinationCity": "Boston",
+    "weightKg": 1.2,
+    "distanceKm": 350,
+    "rate": 12,
+    "statusHistory": [
+      {
+        "status": "Accepted",
+        "at": "2026-01-05T20:20:36.653Z"
+      },
+      {
+        "status": "In Transit",
+        "at": "2026-01-06T20:20:36.653Z"
+      },
+      {
+        "status": "Out for Delivery",
+        "at": "2026-01-07T20:20:36.653Z"
+      },
+      {
+        "status": "Delivered",
+        "at": "2026-01-08T00:20:36.653Z",
+        "note": "Left at front door. Signed by: Mike D."
+      }
+    ],
+    "currentStatus": "Delivered",
+    "estimatedDelivery": "2026-01-07T20:20:36.653Z",
+    "deliveryPreferences": {},
+    "notifications": [],
+    "createdAt": "2026-01-05T20:20:36.654Z"
+  },
+  {
+    "id": "8d0f45bf-300a-4341-8a4b-6f4673c8b9d3",
+    "trackingNumber": "TRK4444333322",
+    "sender": {
+      "name": "Tech Store Inc",
+      "address": "555 Silicon Valley Rd, San Jose, CA"
+    },
+    "recipient": {
+      "name": "Lisa Chen",
+      "address": "246 Beach Blvd, San Diego, CA 92101"
+    },
+    "originCity": "San Jose",
+    "destinationCity": "San Diego",
+    "weightKg": 8.5,
+    "distanceKm": 750,
+    "rate": 27,
+    "statusHistory": [
+      {
+        "status": "Accepted",
+        "at": "2026-01-09T20:20:36.654Z"
+      }
+    ],
+    "currentStatus": "Accepted",
+    "estimatedDelivery": "2026-01-12T20:20:36.654Z",
+    "deliveryPreferences": {
+      "signatureRequired": true
+    },
+    "notifications": {
+      "phone": "+1-555-0123",
+      "smsUpdates": true
+    },
+    "createdAt": "2026-01-09T20:20:36.654Z"
+  },
+  {
+    "id": "0ae49900-1154-4a70-9718-a24ba031d679",
+    "trackingNumber": "TRK7777888899",
+    "sender": {
+      "name": "Fashion Boutique",
+      "address": "890 Style St, Miami, FL"
+    },
+    "recipient": {
+      "name": "Robert Williams",
+      "address": "135 Central Ave, Orlando, FL 32801"
+    },
+    "originCity": "Miami",
+    "destinationCity": "Orlando",
+    "weightKg": 3,
+    "distanceKm": 380,
+    "rate": 16.6,
+    "statusHistory": [
+      {
+        "status": "Accepted",
+        "at": "2026-01-06T20:20:36.654Z"
+      },
+      {
+        "status": "In Transit",
+        "at": "2026-01-07T20:20:36.654Z"
+      },
+      {
+        "status": "Out for Delivery",
+        "at": "2026-01-08T20:20:36.654Z"
+      },
+      {
+        "status": "Delivery Failed",
+        "at": "2026-01-09T02:20:36.654Z",
+        "note": "Customer not home. Notice left."
+      }
+    ],
+    "currentStatus": "Delivery Failed",
+    "estimatedDelivery": "2026-01-08T20:20:36.654Z",
+    "deliveryPreferences": {},
+    "notifications": [],
+    "createdAt": "2026-01-06T20:20:36.654Z"
+  },
+  {
+    "id": "ae251883-cb4a-4158-be58-045ffd750fc2",
+    "trackingNumber": "TRK894467758944",
+    "sender": {
+      "name": "dhdkhd",
+      "address": "dkfnfkòfnf"
+    },
+    "recipient": {
+      "name": "djdndòkd",
+      "address": "dnkb fmlfmlf"
+    },
+    "originCity": "dkdnlòd",
+    "destinationCity": "dldlòmdlàf",
+    "weightKg": 5,
+    "distanceKm": 397,
+    "rate": 20.44,
+    "statusHistory": [
+      {
+        "status": "Accepted",
+        "at": "2026-01-10T20:34:25.793Z"
+      }
+    ],
+    "currentStatus": "Accepted",
+    "estimatedDelivery": "2026-01-11T20:34:25.793Z",
+    "deliveryPreferences": {},
+    "notifications": [],
+    "createdAt": "2026-01-10T20:34:25.793Z"
+  }
+]

@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><%= title %></title>
+  <link rel="stylesheet" href="/css/styles.css" />
+  <link rel="stylesheet" href="/css/usps-theme.css" />
+</head>
+<body>
+  <!-- Main Header -->
+  <header class="site-header">
+    <div class="container header-bar">
+      <a class="brand" href="/">
+        <img src="/my-logo.png" alt="Logo" class="brand-logo" />
+      </a>
+      <nav>
+        <a href="/" class="active">Home</a>
+        <a href="/track">Track</a>
+        <a href="/track-multiple">Multiple Tracking</a>
+        <a href="/rates">Rates</a>
+        <a href="/help">Help</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- Hero Section -->
+  <section class="hero-banner">
+    <div class="container">
+      <h1>Search or Track Your Packages</h1>
+      <p>Fast, reliable delivery tracking with real-time updates and notifications</p>
+      <form method="post" action="/track" style="max-width: 600px; margin: 0 auto;">
+        <div style="display: flex; gap: 10px;">
+          <input name="trackingNumber" placeholder="Enter Tracking Number" required 
+                 style="flex: 1; padding: 15px; border: none; border-radius: 4px; font-size: 16px;" />
+          <button type="submit" class="btn-usps" style="padding: 15px 40px;">Track</button>
+        </div>
+      </form>
+    </div>
+  </section>
+
+  <!-- Quick Tools Section -->
+  <section class="quick-tools-section">
+    <div class="container">
+      <h2>Quick Tools</h2>
+      <div class="quick-tools-grid">
+        <a href="/track" class="quick-tool-card" style="text-decoration: none;">
+          <div class="icon">📍</div>
+          <h3>Track Package</h3>
+          <p>Real-time tracking updates</p>
+        </a>
+        <a href="/track-multiple" class="quick-tool-card" style="text-decoration: none;">
+          <div class="icon">📦</div>
+          <h3>Track Multiple</h3>
+          <p>Track up to 35 packages</p>
+        </a>
+        <a href="/rates" class="quick-tool-card" style="text-decoration: none;">
+          <div class="icon">💰</div>
+          <h3>Calculate Price</h3>
+          <p>Get shipping rates</p>
+        </a>
+        <a href="/locations" class="quick-tool-card" style="text-decoration: none;">
+          <div class="icon">🏢</div>
+          <h3>Find Locations</h3>
+          <p>Locate nearby facilities</p>
+        </a>
+        <a href="/delivery-preferences" class="quick-tool-card" style="text-decoration: none;">
+          <div class="icon">⚙️</div>
+          <h3>Delivery Preferences</h3>
+          <p>Manage delivery options</p>
+        </a>
+        <a href="/help" class="quick-tool-card" style="text-decoration: none;">
+          <div class="icon">❓</div>
+          <h3>Help & Support</h3>
+          <p>Get assistance</p>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Featured Services -->
+  <section class="featured-services">
+    <div class="container">
+      <h2>Featured Services</h2>
+      <div class="featured-grid">
+        <div class="featured-card">
+          <img src="https://images.unsplash.com/photo-1566576721346-d4a3b4eaeb55?w=600&h=400&fit=crop" alt="Package Delivery" />
+          <div class="featured-card-content">
+            <h3>Real-Time Tracking</h3>
+            <p>Track your packages with live updates and detailed location information throughout the delivery journey.</p>
+            <a href="/track" class="btn-usps">Track Now</a>
+          </div>
+        </div>
+        <div class="featured-card">
+          <img src="https://images.unsplash.com/photo-1494412574643-ff11b0a5c1c3?w=600&h=400&fit=crop" alt="Delivery Truck" />
+          <div class="featured-card-content">
+            <h3>Flexible Delivery Options</h3>
+            <p>Choose when and where you receive your packages with our convenient delivery preference options.</p>
+            <a href="/delivery-preferences" class="btn-usps">Manage Preferences</a>
+          </div>
+        </div>
+        <div class="featured-card">
+          <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?w=600&h=400&fit=crop" alt="Customer Support" />
+          <div class="featured-card-content">
+            <h3>Customer Support</h3>
+            <p>Our dedicated support team is here to help with any questions or concerns about your shipments.</p>
+            <a href="/help" class="btn-usps">Get Help</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <div class="container">
+      <div class="footer-grid">
+        <div class="footer-section">
+          <h3>Quick Links</h3>
+          <ul>
+            <li><a href="/track">Track Package</a></li>
+            <li><a href="/track-multiple">Track Multiple</a></li>
+            <li><a href="/rates">Shipping Rates</a></li>
+            <li><a href="/locations">Find Locations</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Services</h3>
+          <ul>
+            <li><a href="/delivery-preferences">Delivery Preferences</a></li>
+            <li><a href="/redelivery">Schedule Redelivery</a></li>
+            <li><a href="/notifications">Email Notifications</a></li>
+            <li><a href="/support">Customer Support</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Help & Support</h3>
+          <ul>
+            <li><a href="/help">Help Center</a></li>
+            <li><a href="/support">Contact Us</a></li>
+            <li><a href="/help">FAQs</a></li>
+            <li><a href="/admin/shipments">Admin Portal</a></li>
+          </ul>
+        </div>
+        <div class="footer-section">
+          <h3>Company</h3>
+          <ul>
+            <li><a href="/">About Us</a></li>
+            <li><a href="/">Privacy Policy</a></li>
+            <li><a href="/">Terms of Service</a></li>
+            <li><a href="/">Careers</a></li>
+          </ul>
+        </div>
+      </div>
+      <div class="footer-bottom">
+        © <%= year %> SwiftTrack Express. All Rights Reserved.
+      </div>
+    </div>
+  </footer>
+</body>
+</html>

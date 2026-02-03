@@ -1,0 +1,335 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <meta name="theme-color" content="#1e40af" />
+  <title>USPS Shipping Label - <%= shipment.trackingNumber %></title>
+  <link rel="stylesheet" href="/css/styles.css" />
+  <style>
+    body { margin: 0; padding: 0; background: #f5f5f5; }
+    .label-container { max-width: 800px; margin: 20px auto; }
+    .no-print { padding: 16px; background: white; border-radius: 8px; margin-bottom: 16px; display: flex; gap: 12px; align-items: center; }
+    .no-print button, .no-print a { padding: 10px 20px; border: none; border-radius: 6px; cursor: pointer; text-decoration: none; font-weight: 600; background: #1e40af; color: white; }
+    .no-print a:hover, .no-print button:hover { background: #1e3a8a; }
+    
+    /* SwiftTrack Label Styling */
+    .swifttrack-label { 
+      width: 100%; 
+      max-width: 800px;
+      background: white;
+      border: 3px solid black;
+      margin: 0 auto;
+      font-family: Arial, sans-serif;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+      page-break-inside: avoid;
+    }
+    
+    .label-header { 
+      background: linear-gradient(to bottom, #1e40af 0%, #1e3a8a 100%);
+      color: white;
+      padding: 16px;
+      text-align: center;
+      border-bottom: 2px solid #fbbf24;
+    }
+    .label-header h1 { margin: 0; font-size: 28px; font-weight: 900; letter-spacing: 0.04em; }
+    .label-header p { margin: 4px 0 0; font-size: 12px; letter-spacing: 0.08em; }
+    
+    .label-content { padding: 0; }
+    
+    .section { 
+      border-bottom: 2px solid #e0e0e0;
+      padding: 12px 16px;
+    }
+    .section:last-child { border-bottom: none; }
+    
+    .service-type {
+      background: #f0f0f0;
+      padding: 12px 16px;
+      border-bottom: 2px solid #333;
+      font-weight: 700;
+      font-size: 14px;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+    }
+    
+    .address-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0;
+      padding: 0;
+    }
+    
+    .address-block {
+      padding: 16px;
+      border-right: 2px solid #e0e0e0;
+    }
+    .address-block:last-child { border-right: none; }
+    
+    .address-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: #333;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      margin-bottom: 8px;
+    }
+    
+    .address-content {
+      font-size: 14px;
+      line-height: 1.5;
+      color: #000;
+    }
+    
+    .address-content .name {
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+    
+    .address-content .street {
+      margin: 2px 0;
+    }
+    
+    .address-content .city-state-zip {
+      margin-top: 4px;
+      font-weight: 600;
+    }
+    
+    .barcode-section {
+      padding: 16px;
+      text-align: center;
+      background: #fafafa;
+      border-bottom: 2px solid #e0e0e0;
+    }
+    
+    .barcode-display {
+      background: white;
+      padding: 12px;
+      border: 2px solid #333;
+      display: inline-block;
+      margin-bottom: 8px;
+    }
+    
+    .barcode-display img {
+      display: block;
+      width: 250px;
+      height: 100px;
+      margin: 0;
+    }
+    
+    .tracking-number-text {
+      font-family: 'Courier New', monospace;
+      font-weight: 700;
+      font-size: 16px;
+      letter-spacing: 2px;
+      margin: 8px 0 0;
+    }
+    
+    .qr-section {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 16px;
+      align-items: center;
+      padding: 16px;
+      background: #f9f9f9;
+      border-bottom: 2px solid #e0e0e0;
+    }
+    
+    .info-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      font-size: 13px;
+    }
+    
+    .info-item {
+      display: flex;
+      flex-direction: column;
+    }
+    
+    .info-label {
+      font-weight: 700;
+      color: #666;
+      font-size: 11px;
+      text-transform: uppercase;
+      margin-bottom: 2px;
+    }
+    
+    .info-value {
+      font-weight: 700;
+      color: #000;
+      font-size: 13px;
+    }
+    
+    .qr-code {
+      border: 2px solid #333;
+      padding: 8px;
+      background: white;
+    }
+    
+    .qr-code img {
+      display: block;
+      width: 120px;
+      height: 120px;
+    }
+    
+    .footer-section {
+      padding: 16px;
+      background: #f0f0f0;
+      font-size: 11px;
+      color: #666;
+      text-align: center;
+      border-top: 2px solid #333;
+    }
+    
+    .footer-section p { margin: 4px 0; }
+    
+    @media print {
+      body { background: white; margin: 0; padding: 0; }
+      .no-print { display: none; }
+      .label-container { margin: 0; max-width: 100%; }
+      .swifttrack-label { max-width: 100%; margin: 0; box-shadow: none; page-break-inside: avoid; }
+      .label-header { padding: 12px; }
+      .section { padding: 10px 12px; }
+      .address-block { padding: 12px; }
+      .barcode-section { padding: 12px; }
+      .qr-section { padding: 12px; }
+    }
+
+    /* Print page size for 4x6 label */
+    @page { size: 4in 6in; margin: 0.125in; }
+    
+    @media (max-width: 640px) {
+      .address-section { grid-template-columns: 1fr; }
+      .address-block { border-right: none; border-bottom: 2px solid #e0e0e0; }
+      .address-block:last-child { border-bottom: none; }
+      .qr-section { grid-template-columns: 1fr; }
+      .barcode-display img { width: 100%; max-width: 200px; }
+    }
+  </style>
+</head>
+<body>
+  <div class="label-container">
+    <div class="no-print">
+      <a href="/track/<%= shipment.trackingNumber %>">← Back to Tracking</a>
+      <button onclick="window.print()">🖨️ Print Label</button>
+      <button onclick="window.location.href='/shipments/new'">+ New Shipment</button>
+    </div>
+
+    <div class="swifttrack-label">
+      <!-- Header -->
+      <div class="label-header">
+        <h1>USPS</h1>
+        <p>United States Postal Service - Shipping Label</p>
+      </div>
+
+      <!-- Service Type -->
+      <div class="service-type">
+        <% const serviceMap = { 'priority-express': 'Priority Mail Express', 'priority': 'Priority Mail', 'first-class': 'First-Class Mail', 'retail-ground': 'Retail Ground', 'media': 'Media Mail' }; %>
+        <%= serviceMap[shipment.serviceType] || 'Priority Mail' %>
+      </div>
+
+      <!-- From / To Addresses -->
+      <div class="address-section">
+        <div class="address-block">
+          <div class="address-label">Return Address</div>
+          <div class="address-content">
+            <div class="name"><%= (shipment.sender && shipment.sender.name) || shipment.senderName || 'Sender Name' %></div>
+            <div class="street"><%= (shipment.sender && shipment.sender.address) || shipment.senderStreet || '' %></div>
+            <div class="city-state-zip">
+              <%= shipment.senderCity || '' %>, <%= shipment.senderState || '' %> <%= shipment.senderZip || '' %>
+            </div>
+          </div>
+        </div>
+
+        <div class="address-block">
+          <div class="address-label">Deliver To</div>
+          <div class="address-content">
+            <div class="name"><%= (shipment.recipient && shipment.recipient.name) || shipment.recipientName || 'Recipient Name' %></div>
+            <div class="street"><%= (shipment.recipient && shipment.recipient.address) || shipment.recipientStreet || '' %></div>
+            <div class="city-state-zip">
+              <%= shipment.recipientCity || '' %>, <%= shipment.recipientState || '' %> <%= shipment.recipientZip || '' %>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Barcode Section -->
+      <div class="barcode-section">
+        <div class="barcode-display">
+          <% if (barcodeDataUrl) { %>
+            <img src="<%= barcodeDataUrl %>" alt="Tracking Barcode" style="display: block; width: 280px; height: auto;" />
+          <% } else { %>
+            <div style="width: 280px; height: 80px; background: #e0e0e0; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #999;">Barcode</div>
+          <% } %>
+        </div>
+        <div class="tracking-number-text"><%= shipment.trackingNumber %></div>
+      </div>
+
+      <!-- QR Code & Info -->
+      <div class="qr-section">
+        <div class="info-grid">
+          <div class="info-item">
+            <span class="info-label">Tracking Number</span>
+            <span class="info-value"><%= shipment.trackingNumber %></span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Service Type</span>
+            <span class="info-value"><%= serviceMap[shipment.serviceType] || 'Priority Mail' %></span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Ship Date</span>
+            <span class="info-value"><%= new Date(shipment.shippedDate || shipment.createdAt || Date.now()).toLocaleDateString() %></span>
+          </div>
+          <div class="info-item">
+            <span class="info-label">Weight</span>
+            <span class="info-value"><%= shipment.weight ? shipment.weight + ' kg' : 'N/A' %></span>
+          </div>
+          <div class="info-item" style="grid-column: 1 / -1;">
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 12px; background: white; border: 3px solid #333; border-radius: 4px; margin-top: 8px;">
+              <div>
+                <span class="info-label" style="display: block; margin-bottom: 4px;">US Postage Paid</span>
+                <span style="font-weight: 900; font-size: 24px; color: #fbbf24;">$<%= postage %></span>
+              </div>
+              <div style="text-align: right;">
+                <div style="font-size: 10px; font-weight: 700; color: #666;">POSTAGE</div>
+                <div style="font-size: 10px; font-weight: 700; color: #666;"><%= new Date().toLocaleDateString() %></div>
+                <div style="font-size: 9px; color: #999;">Meter #123456789</div>
+              </div>
+            </div>
+          </div>
+            <span class="info-label">Dimensions</span>
+            <span class="info-value">
+              <% if (shipment.length && shipment.width && shipment.height) { %>
+                <%= shipment.length %>×<%= shipment.width %>×<%= shipment.height %> in
+              <% } else { %>
+                N/A
+              <% } %>
+            </span>
+          </div>
+          <% if (shipment.insurance) { %>
+            <div class="info-item">
+              <span class="info-label">Insurance</span>
+              <span class="info-value">✓ Included</span>
+            </div>
+          <% } %>
+          <% if (shipment.signatureConfirmation) { %>
+            <div class="info-item">
+              <span class="info-label">Signature</span>
+              <span class="info-value">✓ Required</span>
+            </div>
+          <% } %>
+        </div>
+      </div>
+
+      <!-- Footer -->
+      <div class="footer-section">
+        <p>This is an official USPS shipping label. Please ensure package dimensions and weight are accurate.</p>
+        <p>For tracking updates, visit usps.com or call 1-800-ASK-USPS (1-800-275-8777)</p>
+        <p>Label Generated: <%= new Date().toLocaleString() %></p>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
