@@ -2,14 +2,11 @@ import sgMail from '@sendgrid/mail';
 
 const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
 const SENDER_EMAIL = process.env.SENDER_EMAIL || 'noreply@swifttrack.com';
-const DEMO_MODE = process.env.DEMO_MODE === 'true';
+const DEMO_MODE = process.env.DEMO_MODE === 'true' || !SENDGRID_API_KEY;
 
-if (!SENDGRID_API_KEY && !DEMO_MODE) {
-  console.error('ERROR: SENDGRID_API_KEY environment variable must be set (or set DEMO_MODE=true)');
-  process.exit(1);
-}
-
-if (!DEMO_MODE) {
+if (!SENDGRID_API_KEY) {
+  console.warn('⚠️  SENDGRID_API_KEY not set — running in DEMO_MODE (emails will be logged, not sent)');
+} else {
   sgMail.setApiKey(SENDGRID_API_KEY);
 }
 
@@ -36,7 +33,7 @@ export async function sendStatusUpdate(shipment) {
         <p><strong>Recipient:</strong> ${shipment.recipientName}</p>
         <p><strong>Updated:</strong> ${new Date(lastHistory.at).toLocaleString()}</p>
         ${lastHistory.note ? `<p><strong>Note:</strong> ${lastHistory.note}</p>` : ''}
-        <p>Track your shipment: <a href="http://localhost:3000/track/${shipment.trackingNumber}">Click here</a></p>
+        <p>Track your shipment: <a href="${process.env.PUBLIC_URL || 'http://localhost:3000'}/track/${shipment.trackingNumber}">Click here</a></p>
       `
     };
     await sgMail.send(msg);
@@ -49,7 +46,8 @@ export async function sendStatusUpdate(shipment) {
 
 export function getEmailConfig() {
   return {
-    configured: true,
+    configured: !DEMO_MODE,
+    demoMode: DEMO_MODE,
     senderEmail: SENDER_EMAIL
   };
 }
