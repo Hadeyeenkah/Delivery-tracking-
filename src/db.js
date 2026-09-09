@@ -3,9 +3,15 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
-const dbPath = path.join(__dirname, '..', 'data', 'parceltrack.db');
+
+const dbPath =
+  process.env.VERCEL
+    ? '/tmp/parceltrack.db'
+    : path.join(__dirname, '..', 'data', 'parceltrack.db');
 
 const db = new Database(dbPath);
+
+
 db.pragma('journal_mode = WAL');
 
 export function initDb() {
