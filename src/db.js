@@ -1,6 +1,7 @@
 import Database from 'better-sqlite3';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import fs from 'fs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
@@ -9,10 +10,20 @@ const dbPath =
     ? '/tmp/parceltrack.db'
     : path.join(__dirname, '..', 'data', 'parceltrack.db');
 
+// On Vercel, /tmp starts empty on every cold start.
+// If you ship a seed DB with the deployment, copy it in on first access.
+if (process.env.VERCEL && !fs.existsSync(dbPath)) {
+  const seedPath = path.join(__dirname, '..', 'data', 'parceltrack.db');
+  if (fs.existsSync(seedPath)) {
+    fs.copyFileSync(seedPath, dbPath);
+  }
+}
+
 const db = new Database(dbPath);
 
-
-db.pragma('journal_mode = WAL');
+// WAL mode fails on Vercel's /tmp (locking isn't supported the same way).
+// DELETE mode is the safe default there; keep WAL locally for better perf.
+db.pragma(process.env.VERCEL ? 'journal_mode = DELETE' : 'journal_mode = WAL');
 
 export function initDb() {
   db.exec(`
