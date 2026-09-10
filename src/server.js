@@ -90,7 +90,7 @@ function broadcastShipmentUpdate(shipment) {
 function baseTrackingNumber() {
   const datePart = dayjs().format('YYYYMMDD');
   const rand = Math.random().toString().slice(2, 12);
-  return `PT${datePart}${rand}`;
+  return `USPS${datePart}${rand}`;
 }
 
 async function generateUniqueTrackingNumber() {
