@@ -22,13 +22,14 @@
 .site-header .header-bar {
     max-width: 1200px !important;
     margin: 0 auto !important;
-    padding: 6px 30px !important;
+    padding: 10px 20px !important;
     display: flex !important;
     justify-content: space-between !important;
     align-items: center !important;
-    min-height: 90px !important;
+    min-height: 80px !important;
     height: auto !important;
     flex-wrap: nowrap !important;
+    gap: 16px !important;
 }
 
 .site-header .brand {
@@ -38,7 +39,7 @@
     text-decoration: none !important;
     display: flex !important;
     align-items: center !important;
-    gap: 8px !important;
+    gap: 10px !important;
     letter-spacing: -0.3px !important;
     width: auto !important;
     background: transparent !important;
@@ -66,39 +67,34 @@
     letter-spacing: -0.3px !important;
 }
 
-.site-header nav {
+.site-header .main-nav {
     display: flex !important;
-    gap: 25px !important;
+    gap: 8px !important;
     align-items: center !important;
-    flex-wrap: nowrap !important;
+    flex-wrap: wrap !important;
     width: auto !important;
     justify-content: flex-end !important;
 }
 
 /* Navigation Links */
-.site-header nav a {
+.site-header .main-nav a {
     color: var(--usps-blue) !important;
     font-weight: 600 !important;
     font-size: 14px !important;
-    padding: 4px 0 !important;
+    padding: 10px 12px !important;
     border-bottom: 2px solid transparent !important;
     transition: all 0.2s ease !important;
     text-decoration: none !important;
     white-space: nowrap !important;
     background: transparent !important;
-    border-radius: 0 !important;
+    border-radius: 8px !important;
 }
 
-.site-header nav a:hover {
+.site-header .main-nav a:hover,
+.site-header .main-nav a.active {
     color: var(--usps-light-blue) !important;
     border-bottom-color: var(--usps-light-blue) !important;
-    background: transparent !important;
-}
-
-.site-header nav a.active {
-    color: var(--usps-light-blue) !important;
-    border-bottom-color: var(--usps-light-blue) !important;
-    background: transparent !important;
+    background: rgba(0, 94, 162, 0.05) !important;
 }
 
 /* Hero Banner */

@@ -83,7 +83,7 @@ img {
   font-size: clamp(1.05rem, 1.2vw, 1.35rem);
 }
 
-.site-header nav {
+.site-header .main-nav {
   display: flex;
   gap: 8px;
   align-items: center;
@@ -91,7 +91,7 @@ img {
   justify-content: flex-end;
 }
 
-.site-header nav a {
+.site-header .main-nav a {
   color: var(--muted);
   text-decoration: none;
   padding: 10px 14px;
@@ -102,10 +102,14 @@ img {
   transition: all 0.2s ease;
 }
 
-.site-header nav a:hover,
-.site-header nav a.active {
+.site-header .main-nav a:hover,
+.site-header .main-nav a.active {
   color: var(--accent);
   background: var(--accent-soft);
+}
+
+.nav-toggle {
+  display: none;
 }
 
 .hero-banner {
