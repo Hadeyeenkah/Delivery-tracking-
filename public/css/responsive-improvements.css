@@ -66,11 +66,30 @@ input[type="radio"] {
   }
 
   .site-header .header-bar {
+    position: relative;
     flex-direction: row;
     align-items: center;
     justify-content: space-between;
     padding-top: 12px;
     padding-bottom: 12px;
+    gap: 10px;
+  }
+
+  .brand {
+    flex-shrink: 0;
+    max-width: calc(100% - 64px);
+  }
+
+  .brand-mark {
+    width: 38px;
+    height: 38px;
+    min-width: 38px;
+    min-height: 38px;
+  }
+
+  .brand-text {
+    font-size: 1rem;
+    white-space: nowrap;
   }
 
   .nav-toggle {
@@ -79,19 +98,20 @@ input[type="radio"] {
     justify-content: center;
     flex-direction: column;
     gap: 4px;
-    width: 44px;
-    height: 44px;
+    width: 42px;
+    height: 42px;
     border: 1px solid #dfe7f3;
     border-radius: 10px;
     background: #fff;
     cursor: pointer;
     padding: 0;
     margin-left: auto;
+    flex-shrink: 0;
   }
 
   .nav-toggle span {
     display: block;
-    width: 20px;
+    width: 18px;
     height: 2px;
     background: #1e3a8a;
     border-radius: 2px;

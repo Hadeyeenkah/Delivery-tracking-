@@ -71,6 +71,8 @@ img {
   justify-content: center;
   width: 42px;
   height: 42px;
+  min-width: 42px;
+  min-height: 42px;
   border-radius: 12px;
   background: linear-gradient(135deg, var(--accent) 0%, #60a5fa 100%);
   color: white;
@@ -81,6 +83,7 @@ img {
 .brand-text {
   color: #18212f;
   font-size: clamp(1.05rem, 1.2vw, 1.35rem);
+  line-height: 1.1;
 }
 
 .site-header .main-nav {
