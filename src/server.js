@@ -10,6 +10,7 @@ import { exec } from 'child_process';
 import cookieParser from 'cookie-parser';
 import { initDb, createShipment, getShipment, getShipmentById, getAllShipments, updateShipmentStatus, updateShipmentPreferences, updateShipmentNotifications, trackingNumberExists } from './db.js';
 import { sendStatusUpdate } from './email.js';
+import { createAdminToken, verifyAdminToken } from './auth.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -24,38 +25,46 @@ app.use(express.json());
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, '..', 'public')));
 
-// Simple session storage (in-memory for demo, use Redis in production)
-const adminSessions = new Map();
-
-function generateSessionToken() {
-  return Math.random().toString(36).substring(2, 15) + Math.random().toString(36).substring(2, 15);
-}
+const ADMIN_USER = process.env.ADMIN_USER || 'admin';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'admin';
+const IS_SECURE_COOKIE = Boolean(process.env.VERCEL) || process.env.NODE_ENV === 'production';
 
 function requireAdminAuth(req, res, next) {
   const token = req.cookies?.adminToken || req.query?.token;
+  const username = req.cookies?.adminUsername || req.query?.username || ADMIN_USER;
   console.log(`[AUTH] Cookie token: ${req.cookies?.adminToken ? 'present' : 'missing'}`);
   console.log(`[AUTH] Query token: ${req.query?.token ? 'present' : 'missing'}`);
-  console.log(`[AUTH] Session exists: ${token ? adminSessions.has(token) : 'N/A'}`);
-  if (token && adminSessions.has(token)) {
+  console.log(`[AUTH] Token valid: ${token ? verifyAdminToken(token, username) : false}`);
+
+  if (token && verifyAdminToken(token, username)) {
     console.log(`[AUTH] ✓ Access granted`);
-    // Set cookie if it came from query param
     if (req.query?.token) {
-      res.cookie('adminToken', token, { 
-        httpOnly: false, 
+      res.cookie('adminToken', token, {
+        httpOnly: true,
         maxAge: 24 * 60 * 60 * 1000,
         path: '/',
-        sameSite: 'lax'
+        sameSite: 'lax',
+        secure: IS_SECURE_COOKIE,
+      });
+      res.cookie('adminUsername', username, {
+        httpOnly: true,
+        maxAge: 24 * 60 * 60 * 1000,
+        path: '/',
+        sameSite: 'lax',
+        secure: IS_SECURE_COOKIE,
       });
     }
     return next();
   }
+
   console.log(`[AUTH] ✗ Access denied, redirecting to /login`);
   return res.redirect('/login');
 }
 
 function isAdminAuthenticated(req) {
   const token = req.cookies?.adminToken;
-  return token && adminSessions.has(token);
+  const username = req.cookies?.adminUsername || ADMIN_USER;
+  return Boolean(token && verifyAdminToken(token, username));
 }
 
 // Real-time updates via Server-Sent Events (SSE)
@@ -189,39 +198,39 @@ app.get('/login', (req, res) => {
 
 app.post('/login', (req, res) => {
   const { username, password } = req.body;
-  const expectedUser = process.env.ADMIN_USER || 'admin';
-  const expectedPass = process.env.ADMIN_PASSWORD || 'admin';
-  
+
   console.log(`[LOGIN] Attempt with username: ${username}`);
-  console.log(`[LOGIN] Expected: ${expectedUser}, Got: ${username}`);
-  
-  if (username === expectedUser && password === expectedPass) {
+  console.log(`[LOGIN] Expected: ${ADMIN_USER}, Got: ${username}`);
+
+  if (username === ADMIN_USER && password === ADMIN_PASSWORD) {
     console.log(`[LOGIN] ✓ Authentication successful for ${username}`);
-    const token = generateSessionToken();
-    adminSessions.set(token, { username, createdAt: Date.now() });
-    console.log(`[LOGIN] Token created: ${token}`);
-    console.log(`[LOGIN] Total sessions: ${adminSessions.size}`);
-    res.cookie('adminToken', token, { 
-      httpOnly: false,  // Changed to false for Simple Browser compatibility
+    const token = createAdminToken(username);
+    console.log(`[LOGIN] Token created for ${username}`);
+    res.cookie('adminToken', token, {
+      httpOnly: true,
       maxAge: 24 * 60 * 60 * 1000,
       path: '/',
-      sameSite: 'lax'
+      sameSite: 'lax',
+      secure: IS_SECURE_COOKIE,
+    });
+    res.cookie('adminUsername', username, {
+      httpOnly: true,
+      maxAge: 24 * 60 * 60 * 1000,
+      path: '/',
+      sameSite: 'lax',
+      secure: IS_SECURE_COOKIE,
     });
     console.log(`[LOGIN] ✓ Cookie set, rendering success page`);
-    // Render a success page with auto-redirect
-    return res.render('login-success', { token });
+    return res.render('login-success', { token, username });
   }
-  
+
   console.log(`[LOGIN] ✗ Authentication failed`);
   res.render('login', { error: 'Invalid username or password' });
 });
 
 app.get('/logout', (req, res) => {
-  const token = req.cookies?.adminToken;
-  if (token) {
-    adminSessions.delete(token);
-  }
-  res.clearCookie('adminToken');
+  res.clearCookie('adminToken', { path: '/' });
+  res.clearCookie('adminUsername', { path: '/' });
   res.redirect('/');
 });
 
@@ -574,21 +583,19 @@ app.post('/support/claim', async (req, res) => {
 app.listen(PORT, async () => {
   initDb();
   const DEMO_MODE = process.env.DEMO_MODE === 'true';
-  
+
   if (!process.env.ADMIN_USER || !process.env.ADMIN_PASSWORD) {
-    console.error('ERROR: ADMIN_USER and ADMIN_PASSWORD environment variables must be set');
-    process.exit(1);
+    console.warn('⚠️  ADMIN_USER and ADMIN_PASSWORD were not set; using fallback demo credentials. Set them in Vercel for production.');
   }
   if (!process.env.SENDGRID_API_KEY && !DEMO_MODE) {
-    console.error('ERROR: SENDGRID_API_KEY environment variable must be set (or set DEMO_MODE=true for testing)');
-    process.exit(1);
+    console.warn('⚠️  SENDGRID_API_KEY is missing; using DEMO_MODE fallback for local/dev. Set DEMO_MODE=true or add SendGrid credentials.');
   }
-  
+
   console.log(`\n✨ SwiftTrack Express Server running on http://localhost:${PORT}`);
   console.log(`✓ Admin panel: http://localhost:${PORT}/admin/shipments`);
   console.log(`✓ Database: SQLite (data/swifttrack.db)`);
-  console.log(`✓ Email: ${DEMO_MODE ? 'Demo Mode (console logging)' : 'SendGrid configured'}\n`);
-  if (DEMO_MODE) {
-    console.log('⚠️  Running in DEMO MODE - emails will be logged to console\n');
+  console.log(`✓ Email: ${DEMO_MODE ? 'Demo Mode (console logging)' : (process.env.SENDGRID_API_KEY ? 'SendGrid configured' : 'Demo Mode fallback')}\n`);
+  if (DEMO_MODE || (!process.env.ADMIN_USER || !process.env.ADMIN_PASSWORD)) {
+    console.log('⚠️  Using fallback/default admin credentials for this environment\n');
   }
 });

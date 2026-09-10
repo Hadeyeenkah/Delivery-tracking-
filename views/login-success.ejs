@@ -8,11 +8,10 @@
   <title>Redirecting...</title>
   <link rel="stylesheet" href="/css/responsive-improvements.css" />
   <script>
-    // Store token in localStorage as backup
     localStorage.setItem('adminToken', '<%= token %>');
-    // Redirect with token in URL as fallback for browsers that don't support cookies
+    localStorage.setItem('adminUsername', '<%= username %>');
     setTimeout(() => {
-      window.location.href = '/admin/shipments?token=<%= token %>';
+      window.location.href = '/admin/shipments?token=<%= token %>&username=<%= username %>';
     }, 500);
   </script>
   <style>
