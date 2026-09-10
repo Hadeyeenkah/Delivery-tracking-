@@ -13,23 +13,10 @@
   <header class="site-header">
     <div class="container header-bar">
       <a class="brand" href="/" aria-label="SwiftTrack home">
-        <span class="brand-mark">ST</span>
-        <span class="brand-text">SwiftTrack</span>
+        <img src="/my-logo.png" alt="USPS logo" class="brand-logo" />
       </a>
 
-      <button class="nav-toggle" type="button" aria-label="Toggle navigation" aria-expanded="false">
-        <span></span>
-        <span></span>
-        <span></span>
-      </button>
-
-      <nav class="main-nav" id="mainNav">
-        <a href="/" class="active">Home</a>
-        <a href="/track">Track</a>
-        <a href="/track-multiple">Multiple Tracking</a>
-        <a href="/rates">Rates</a>
-        <a href="/help">Help</a>
-      </nav>
+      <div aria-hidden="true"></div>
     </div>
   </header>
 
@@ -164,15 +151,7 @@
     </div>
   </footer>
   <script>
-    const navToggle = document.querySelector('.nav-toggle');
-    const mainNav = document.querySelector('.main-nav');
-
-    if (navToggle && mainNav) {
-      navToggle.addEventListener('click', () => {
-        const isOpen = mainNav.classList.toggle('open');
-        navToggle.setAttribute('aria-expanded', String(isOpen));
-      });
-    }
+    // Mobile nav popup removed intentionally for a cleaner homepage layout.
   </script>
 </body>
 </html>

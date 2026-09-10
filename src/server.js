@@ -238,6 +238,10 @@ app.get('/', (req, res) => {
   res.render('index', { title: 'ParcelTrack', year: dayjs().year() });
 });
 
+app.get('/track', (req, res) => {
+  res.render('track', { shipment: null, trackingNumber: null });
+});
+
 app.post('/track', (req, res) => {
   const { trackingNumber } = req.body;
   if (!trackingNumber) return res.redirect('/');

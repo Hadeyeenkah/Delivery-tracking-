@@ -71,73 +71,29 @@ input[type="radio"] {
     position: relative;
     flex-direction: row;
     align-items: center;
-    justify-content: space-between;
-    padding-top: 12px;
-    padding-bottom: 12px;
-    gap: 10px;
+    justify-content: flex-end;
+    padding-top: 6px;
+    padding-bottom: 6px;
+    gap: 8px;
+    min-height: 48px;
   }
 
   .brand {
-    flex-shrink: 0;
-    max-width: calc(100% - 64px);
+    display: none !important;
   }
 
   .brand-mark {
-    width: 38px;
-    height: 38px;
-    min-width: 38px;
-    min-height: 38px;
+    display: none !important;
   }
 
   .brand-text {
-    font-size: 1rem;
-    white-space: nowrap;
+    display: none !important;
   }
 
-  .nav-toggle {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    flex-direction: column;
-    gap: 4px;
-    width: 42px;
-    height: 42px;
-    border: 1px solid #dfe7f3;
-    border-radius: 10px;
-    background: #fff;
-    cursor: pointer;
-    padding: 0;
-    margin-left: auto;
-    flex-shrink: 0;
-  }
-
-  .nav-toggle span {
-    display: block;
-    width: 18px;
-    height: 2px;
-    background: #1e3a8a;
-    border-radius: 2px;
-  }
-
-  .site-header .main-nav {
-    display: none;
-    width: 100%;
-    flex-direction: column;
-    align-items: stretch;
-    gap: 8px;
-    margin-top: 8px;
-    padding-bottom: 8px;
-  }
-
+  .nav-toggle,
+  .site-header .main-nav,
   .site-header .main-nav.open {
-    display: flex;
-  }
-
-  .site-header .main-nav a {
-    width: 100%;
-    text-align: center;
-    padding: 12px 10px;
-    font-size: 0.78rem;
+    display: none !important;
   }
 
   .hero-banner {
