@@ -1,17 +1,24 @@
+import { MongoClient, ObjectId } from 'mongodb';
 import Database from 'better-sqlite3';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const mongoUri = process.env.MONGODB_URI;
+const useMongo = Boolean(mongoUri);
+
+const hasPersistentStorage = Boolean(mongoUri || process.env.POSTGRES_URL || process.env.DATABASE_URL || process.env.VERCEL_BLOB_READ_WRITE_TOKEN);
+
+if (process.env.VERCEL && !hasPersistentStorage) {
+  console.warn('[DB] Vercel detected: SQLite is using /tmp, which is ephemeral and will reset on cold starts. Shipments will disappear unless you connect a real persistent data store such as MongoDB Atlas.');
+}
 
 const dbPath =
   process.env.VERCEL
     ? '/tmp/parceltrack.db'
     : path.join(__dirname, '..', 'data', 'parceltrack.db');
 
-// On Vercel, /tmp starts empty on every cold start.
-// If you ship a seed DB with the deployment, copy it in on first access.
 if (process.env.VERCEL && !fs.existsSync(dbPath)) {
   const seedPath = path.join(__dirname, '..', 'data', 'parceltrack.db');
   if (fs.existsSync(seedPath)) {
@@ -19,14 +26,73 @@ if (process.env.VERCEL && !fs.existsSync(dbPath)) {
   }
 }
 
-const db = new Database(dbPath);
+const sqliteDb = new Database(dbPath);
+sqliteDb.pragma(process.env.VERCEL ? 'journal_mode = DELETE' : 'journal_mode = WAL');
 
-// WAL mode fails on Vercel's /tmp (locking isn't supported the same way).
-// DELETE mode is the safe default there; keep WAL locally for better perf.
-db.pragma(process.env.VERCEL ? 'journal_mode = DELETE' : 'journal_mode = WAL');
+let mongoClient = null;
+let mongoDb = null;
 
-export function initDb() {
-  db.exec(`
+if (useMongo) {
+  mongoClient = new MongoClient(mongoUri, {
+    serverSelectionTimeoutMS: 15000,
+  });
+  await mongoClient.connect();
+  mongoDb = mongoClient.db(process.env.MONGODB_DB || 'swifttrack');
+  console.log('[DB] Using MongoDB Atlas for persistent storage.');
+}
+
+function normalizeMongoRow(doc) {
+  if (!doc) return null;
+
+  return {
+    id: doc.id || String(doc._id),
+    trackingNumber: doc.trackingNumber,
+    senderName: doc.senderName,
+    senderAddress: doc.senderAddress,
+    recipientName: doc.recipientName,
+    recipientAddress: doc.recipientAddress,
+    recipientEmail: doc.recipientEmail || null,
+    recipientPhone: doc.recipientPhone || null,
+    originCity: doc.originCity,
+    destinationCity: doc.destinationCity,
+    weightKg: doc.weightKg,
+    distanceKm: doc.distanceKm,
+    rate: doc.rate,
+    currentStatus: doc.currentStatus || 'Accepted',
+    estimatedDelivery: doc.estimatedDelivery || null,
+    deliveredAt: doc.deliveredAt || null,
+    createdAt: doc.createdAt,
+    holdForPickup: Boolean(doc.holdForPickup),
+    signatureRequired: Boolean(doc.signatureRequired),
+    deliveryInstructions: doc.deliveryInstructions || null,
+    safePlaceLocation: doc.safePlaceLocation || null,
+    emailUpdates: Boolean(doc.emailUpdates),
+    smsUpdates: Boolean(doc.smsUpdates),
+    sender: {
+      name: doc.senderName,
+      address: doc.senderAddress,
+    },
+    recipient: {
+      name: doc.recipientName,
+      address: doc.recipientAddress,
+    },
+    statusHistory: Array.isArray(doc.statusHistory) ? doc.statusHistory.map((h) => ({
+      status: h.status,
+      at: h.at,
+      ...(h.note ? { note: h.note } : {}),
+    })) : [],
+  };
+}
+
+export async function initDb() {
+  if (useMongo && mongoDb) {
+    const shipments = mongoDb.collection('shipments');
+    await shipments.createIndex({ trackingNumber: 1 }, { unique: true });
+    await shipments.createIndex({ createdAt: -1 });
+    return;
+  }
+
+  sqliteDb.exec(`
     CREATE TABLE IF NOT EXISTS shipments (
       id TEXT PRIMARY KEY,
       trackingNumber TEXT UNIQUE NOT NULL,
@@ -67,8 +133,40 @@ export function initDb() {
   `);
 }
 
-export function createShipment(data) {
-  const stmt = db.prepare(`
+export async function createShipment(data) {
+  if (useMongo && mongoDb) {
+    const shipments = mongoDb.collection('shipments');
+    const doc = {
+      _id: new ObjectId(),
+      id: data.id,
+      trackingNumber: data.trackingNumber,
+      senderName: data.senderName,
+      senderAddress: data.senderAddress,
+      recipientName: data.recipientName,
+      recipientAddress: data.recipientAddress,
+      originCity: data.originCity,
+      destinationCity: data.destinationCity,
+      weightKg: data.weightKg,
+      distanceKm: data.distanceKm,
+      rate: data.rate,
+      currentStatus: data.currentStatus || 'Accepted',
+      estimatedDelivery: data.estimatedDelivery || null,
+      deliveredAt: data.deliveredAt || null,
+      createdAt: data.createdAt,
+      holdForPickup: !!data.holdForPickup,
+      signatureRequired: !!data.signatureRequired,
+      deliveryInstructions: data.deliveryInstructions || null,
+      safePlaceLocation: data.safePlaceLocation || null,
+      emailUpdates: !!data.emailUpdates,
+      smsUpdates: !!data.smsUpdates,
+      statusHistory: [{ status: 'Accepted', at: data.createdAt }],
+    };
+
+    await shipments.insertOne(doc);
+    return;
+  }
+
+  const stmt = sqliteDb.prepare(`
     INSERT INTO shipments (
       id, trackingNumber, senderName, senderAddress, recipientName, recipientAddress,
       originCity, destinationCity, weightKg, distanceKm, rate, currentStatus,
@@ -84,110 +182,143 @@ export function createShipment(data) {
   addHistory(data.id, 'Accepted', null, data.createdAt);
 }
 
-export function getShipment(trackingNumber) {
-  const stmt = db.prepare(`SELECT * FROM shipments WHERE trackingNumber = ?`);
+export async function getShipment(trackingNumber) {
+  if (useMongo && mongoDb) {
+    const shipments = mongoDb.collection('shipments');
+    const doc = await shipments.findOne({ trackingNumber });
+    return normalizeMongoRow(doc);
+  }
+
+  const stmt = sqliteDb.prepare(`SELECT * FROM shipments WHERE trackingNumber = ?`);
   const shipment = stmt.get(trackingNumber);
   if (!shipment) return null;
-  
-  const histStmt = db.prepare(`SELECT status, note, timestamp FROM shipment_history WHERE shipmentId = ? ORDER BY timestamp ASC`);
+
+  const histStmt = sqliteDb.prepare(`SELECT status, note, timestamp FROM shipment_history WHERE shipmentId = ? ORDER BY timestamp ASC`);
   const history = histStmt.all(shipment.id);
-  
+
   return {
     ...shipment,
-    sender: {
-      name: shipment.senderName,
-      address: shipment.senderAddress
-    },
-    recipient: {
-      name: shipment.recipientName,
-      address: shipment.recipientAddress
-    },
-    statusHistory: history.map(h => ({
-      status: h.status,
-      at: h.timestamp,
-      ...(h.note && { note: h.note })
-    }))
+    sender: { name: shipment.senderName, address: shipment.senderAddress },
+    recipient: { name: shipment.recipientName, address: shipment.recipientAddress },
+    statusHistory: history.map((h) => ({ status: h.status, at: h.timestamp, ...(h.note && { note: h.note }) }))
   };
 }
 
-export function getShipmentById(id) {
-  const stmt = db.prepare(`SELECT * FROM shipments WHERE id = ?`);
+export async function getShipmentById(id) {
+  if (useMongo && mongoDb) {
+    const shipments = mongoDb.collection('shipments');
+    const doc = await shipments.findOne({ id });
+    return normalizeMongoRow(doc);
+  }
+
+  const stmt = sqliteDb.prepare(`SELECT * FROM shipments WHERE id = ?`);
   const shipment = stmt.get(id);
   if (!shipment) return null;
-  
-  const histStmt = db.prepare(`SELECT status, note, timestamp FROM shipment_history WHERE shipmentId = ? ORDER BY timestamp ASC`);
+
+  const histStmt = sqliteDb.prepare(`SELECT status, note, timestamp FROM shipment_history WHERE shipmentId = ? ORDER BY timestamp ASC`);
   const history = histStmt.all(id);
-  
+
   return {
     ...shipment,
-    sender: {
-      name: shipment.senderName,
-      address: shipment.senderAddress
-    },
-    recipient: {
-      name: shipment.recipientName,
-      address: shipment.recipientAddress
-    },
-    statusHistory: history.map(h => ({
-      status: h.status,
-      at: h.timestamp,
-      ...(h.note && { note: h.note })
-    }))
+    sender: { name: shipment.senderName, address: shipment.senderAddress },
+    recipient: { name: shipment.recipientName, address: shipment.recipientAddress },
+    statusHistory: history.map((h) => ({ status: h.status, at: h.timestamp, ...(h.note && { note: h.note }) }))
   };
 }
 
-export function getAllShipments() {
-  const stmt = db.prepare(`SELECT * FROM shipments ORDER BY createdAt DESC`);
+export async function getAllShipments() {
+  if (useMongo && mongoDb) {
+    const shipments = mongoDb.collection('shipments');
+    const docs = await shipments.find({}).sort({ createdAt: -1 }).toArray();
+    return docs.map(normalizeMongoRow);
+  }
+
+  const stmt = sqliteDb.prepare(`SELECT * FROM shipments ORDER BY createdAt DESC`);
   const shipments = stmt.all();
-  
-  return shipments.map(s => {
-    const histStmt = db.prepare(`SELECT status, note, timestamp FROM shipment_history WHERE shipmentId = ? ORDER BY timestamp ASC`);
+
+  return shipments.map((s) => {
+    const histStmt = sqliteDb.prepare(`SELECT status, note, timestamp FROM shipment_history WHERE shipmentId = ? ORDER BY timestamp ASC`);
     const history = histStmt.all(s.id);
     return {
       ...s,
-      sender: {
-        name: s.senderName,
-        address: s.senderAddress
-      },
-      recipient: {
-        name: s.recipientName,
-        address: s.recipientAddress
-      },
-      statusHistory: history.map(h => ({
-        status: h.status,
-        at: h.timestamp,
-        ...(h.note && { note: h.note })
-      }))
+      sender: { name: s.senderName, address: s.senderAddress },
+      recipient: { name: s.recipientName, address: s.recipientAddress },
+      statusHistory: history.map((h) => ({ status: h.status, at: h.timestamp, ...(h.note && { note: h.note }) }))
     };
   });
 }
 
-export function updateShipmentStatus(id, status, note = null) {
+export async function updateShipmentStatus(id, status, note = null) {
+  if (useMongo && mongoDb) {
+    const shipments = mongoDb.collection('shipments');
+    const timestamp = new Date().toISOString();
+    const result = await shipments.findOneAndUpdate(
+      { id },
+      {
+        $set: { currentStatus: status },
+        $push: { statusHistory: { status, at: timestamp, ...(note ? { note } : {}) } },
+      },
+      { returnDocument: 'after' }
+    );
+
+    if (result.value && status === 'Delivered') {
+      await shipments.updateOne({ id }, { $set: { deliveredAt: timestamp } });
+    }
+
+    return normalizeMongoRow(result.value);
+  }
+
   const timestamp = new Date().toISOString();
   addHistory(id, status, note, timestamp);
-  
-  const updateStmt = db.prepare(`UPDATE shipments SET currentStatus = ? WHERE id = ?`);
+
+  const updateStmt = sqliteDb.prepare(`UPDATE shipments SET currentStatus = ? WHERE id = ?`);
   updateStmt.run(status, id);
-  
+
   if (status === 'Delivered') {
-    const deliverStmt = db.prepare(`UPDATE shipments SET deliveredAt = ? WHERE id = ?`);
+    const deliverStmt = sqliteDb.prepare(`UPDATE shipments SET deliveredAt = ? WHERE id = ?`);
     deliverStmt.run(timestamp, id);
   }
-  
+
   return getShipmentById(id);
 }
 
-export function addHistory(shipmentId, status, note = null, timestamp = null) {
+export async function addHistory(shipmentId, status, note = null, timestamp = null) {
   const ts = timestamp || new Date().toISOString();
-  const stmt = db.prepare(`
+
+  if (useMongo && mongoDb) {
+    const shipments = mongoDb.collection('shipments');
+    await shipments.updateOne(
+      { id: shipmentId },
+      { $push: { statusHistory: { status, at: ts, ...(note ? { note } : {}) } } }
+    );
+    return;
+  }
+
+  const stmt = sqliteDb.prepare(`
     INSERT INTO shipment_history (shipmentId, status, note, timestamp)
     VALUES (?, ?, ?, ?)
   `);
   stmt.run(shipmentId, status, note, ts);
 }
 
-export function updateShipmentPreferences(id, preferences) {
-  const stmt = db.prepare(`
+export async function updateShipmentPreferences(id, preferences) {
+  if (useMongo && mongoDb) {
+    const shipments = mongoDb.collection('shipments');
+    await shipments.updateOne(
+      { id },
+      {
+        $set: {
+          holdForPickup: !!preferences.holdForPickup,
+          signatureRequired: !!preferences.signatureRequired,
+          deliveryInstructions: preferences.deliveryInstructions || null,
+          safePlaceLocation: preferences.safePlaceLocation || null,
+        },
+      }
+    );
+    return;
+  }
+
+  const stmt = sqliteDb.prepare(`
     UPDATE shipments SET
       holdForPickup = ?,
       signatureRequired = ?,
@@ -204,8 +335,24 @@ export function updateShipmentPreferences(id, preferences) {
   );
 }
 
-export function updateShipmentNotifications(id, notif) {
-  const stmt = db.prepare(`
+export async function updateShipmentNotifications(id, notif) {
+  if (useMongo && mongoDb) {
+    const shipments = mongoDb.collection('shipments');
+    await shipments.updateOne(
+      { id },
+      {
+        $set: {
+          recipientEmail: notif.email || null,
+          recipientPhone: notif.phone || null,
+          emailUpdates: !!notif.emailUpdates,
+          smsUpdates: !!notif.smsUpdates,
+        },
+      }
+    );
+    return;
+  }
+
+  const stmt = sqliteDb.prepare(`
     UPDATE shipments SET
       recipientEmail = ?,
       recipientPhone = ?,
@@ -222,9 +369,15 @@ export function updateShipmentNotifications(id, notif) {
   );
 }
 
-export function trackingNumberExists(trackingNumber) {
-  const stmt = db.prepare(`SELECT 1 FROM shipments WHERE trackingNumber = ?`);
+export async function trackingNumberExists(trackingNumber) {
+  if (useMongo && mongoDb) {
+    const shipments = mongoDb.collection('shipments');
+    const doc = await shipments.findOne({ trackingNumber }, { projection: { _id: 1 } });
+    return Boolean(doc);
+  }
+
+  const stmt = sqliteDb.prepare(`SELECT 1 FROM shipments WHERE trackingNumber = ?`);
   return !!stmt.get(trackingNumber);
 }
 
-export default db;
+export default mongoDb || sqliteDb;

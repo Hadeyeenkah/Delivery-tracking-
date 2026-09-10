@@ -249,7 +249,7 @@ app.post('/track', (req, res) => {
 });
 
 app.get('/track/:trackingNumber', async (req, res) => {
-  const shipment = getShipment(req.params.trackingNumber);
+  const shipment = await getShipment(req.params.trackingNumber);
   res.render('track', { shipment, trackingNumber: req.params.trackingNumber });
 });
 
@@ -344,7 +344,7 @@ app.post('/shipments', requireAdminAuth, async (req, res) => {
 });
 
 app.get('/admin/shipments', requireAdminAuth, async (req, res) => {
-  const shipments = getAllShipments();
+  const shipments = await getAllShipments();
   res.render('admin-shipments', { shipments });
 });
 
@@ -354,15 +354,15 @@ app.post('/admin/shipments/:id/status', requireAdminAuth, async (req, res) => {
   
   if (!status) return res.redirect('/admin/shipments');
   
-  const shipment = updateShipmentStatus(id, status, note || null);
+  const shipment = await updateShipmentStatus(id, status, note || null);
   broadcastShipmentUpdate(shipment);
   await sendStatusUpdate(shipment);
   
   res.redirect('/admin/shipments');
 });
 
-app.get('/api/track/:trackingNumber', (req, res) => {
-  const shipment = getShipment(req.params.trackingNumber);
+app.get('/api/track/:trackingNumber', async (req, res) => {
+  const shipment = await getShipment(req.params.trackingNumber);
   if (!shipment) return res.status(404).json({ error: 'Not found' });
   res.json(shipment);
 });
@@ -381,7 +381,7 @@ app.post('/api/shipments', async (req, res) => {
   const estimatedDays = Math.ceil(distanceKm / 500);
   const estimatedDelivery = dayjs(createdAt).add(estimatedDays, 'day').toISOString();
 
-  createShipment({
+  await createShipment({
     id,
     trackingNumber,
     senderName,
@@ -398,7 +398,7 @@ app.post('/api/shipments', async (req, res) => {
     createdAt
   });
 
-  const shipment = getShipmentById(id);
+  const shipment = await getShipmentById(id);
   res.status(201).json(shipment);
 });
 
@@ -406,7 +406,7 @@ app.patch('/api/shipments/:id/status', requireAdminAuth, async (req, res) => {
   const { status } = req.body || {};
   if (!status) return res.status(400).json({ error: 'Status required' });
   
-  const shipment = updateShipmentStatus(req.params.id, status);
+  const shipment = await updateShipmentStatus(req.params.id, status);
   if (!shipment) return res.status(404).json({ error: 'Not found' });
   
   broadcastShipmentUpdate(shipment);
@@ -414,14 +414,14 @@ app.patch('/api/shipments/:id/status', requireAdminAuth, async (req, res) => {
   res.json(shipment);
 });
 
-app.get('/api/shipments/:id', (req, res) => {
-  const shipment = getShipmentById(req.params.id);
+app.get('/api/shipments/:id', async (req, res) => {
+  const shipment = await getShipmentById(req.params.id);
   if (!shipment) return res.status(404).json({ error: 'Not found' });
   res.json(shipment);
 });
 
 app.get('/api/shipments/:id/label.png', async (req, res) => {
-  const shipment = getShipmentById(req.params.id);
+  const shipment = await getShipmentById(req.params.id);
   if (!shipment) return res.status(404).json({ error: 'Not found' });
   try {
     const buf = await QRCode.toBuffer(shipment.trackingNumber, { type: 'png', width: 256 });
@@ -433,7 +433,7 @@ app.get('/api/shipments/:id/label.png', async (req, res) => {
 });
 
 app.get('/label/:id', async (req, res) => {
-  const shipment = getShipmentById(req.params.id);
+  const shipment = await getShipmentById(req.params.id);
   if (!shipment) return res.status(404).send('Label not found');
   
   // Generate QR code
@@ -484,25 +484,26 @@ app.post('/track-multiple', async (req, res) => {
   const { trackingNumbers } = req.body;
   if (!trackingNumbers) return res.redirect('/track-multiple');
   const numbers = trackingNumbers.split(/[,\n\s]+/).map(n => n.trim()).filter(Boolean);
-  const results = numbers.map(num => {
-    const shipment = getShipment(num);
-    return { trackingNumber: num, shipment };
-  });
+  const results = [];
+  for (const num of numbers) {
+    const shipment = await getShipment(num);
+    results.push({ trackingNumber: num, shipment });
+  }
   res.render('track-multiple', { results });
 });
 
-app.get('/shipments/:id/preferences', (req, res) => {
-  const shipment = getShipmentById(req.params.id);
+app.get('/shipments/:id/preferences', async (req, res) => {
+  const shipment = await getShipmentById(req.params.id);
   if (!shipment) return res.redirect('/');
   res.render('delivery-preferences', { shipment });
 });
 
 app.post('/shipments/:id/preferences', async (req, res) => {
   const { holdForPickup, deliveryInstructions, signatureRequired, safePlaceLocation } = req.body;
-  const shipment = getShipmentById(req.params.id);
+  const shipment = await getShipmentById(req.params.id);
   if (!shipment) return res.redirect('/');
   
-  updateShipmentPreferences(req.params.id, {
+  await updateShipmentPreferences(req.params.id, {
     holdForPickup: holdForPickup === 'on',
     deliveryInstructions: deliveryInstructions || '',
     signatureRequired: signatureRequired === 'on',
@@ -512,33 +513,33 @@ app.post('/shipments/:id/preferences', async (req, res) => {
   res.redirect(`/track/${shipment.trackingNumber}`);
 });
 
-app.get('/shipments/:id/redelivery', (req, res) => {
-  const shipment = getShipmentById(req.params.id);
+app.get('/shipments/:id/redelivery', async (req, res) => {
+  const shipment = await getShipmentById(req.params.id);
   if (!shipment) return res.redirect('/');
   res.render('redelivery', { shipment });
 });
 
 app.post('/shipments/:id/redelivery', async (req, res) => {
   const { redeliveryDate } = req.body;
-  const shipment = getShipmentById(req.params.id);
+  const shipment = await getShipmentById(req.params.id);
   if (!shipment) return res.redirect('/');
   
-  updateShipmentStatus(req.params.id, 'Redelivery Scheduled', `Scheduled for ${redeliveryDate}`);
+  await updateShipmentStatus(req.params.id, 'Redelivery Scheduled', `Scheduled for ${redeliveryDate}`);
   res.redirect(`/track/${shipment.trackingNumber}`);
 });
 
-app.get('/shipments/:id/notifications', (req, res) => {
-  const shipment = getShipmentById(req.params.id);
+app.get('/shipments/:id/notifications', async (req, res) => {
+  const shipment = await getShipmentById(req.params.id);
   if (!shipment) return res.redirect('/');
   res.render('notifications', { shipment });
 });
 
 app.post('/shipments/:id/notifications', async (req, res) => {
   const { email, phone, smsUpdates, emailUpdates } = req.body;
-  const shipment = getShipmentById(req.params.id);
+  const shipment = await getShipmentById(req.params.id);
   if (!shipment) return res.redirect('/');
   
-  updateShipmentNotifications(req.params.id, {
+  await updateShipmentNotifications(req.params.id, {
     email: email || '',
     phone: phone || '',
     smsUpdates: smsUpdates === 'on',
@@ -585,7 +586,7 @@ app.post('/support/claim', async (req, res) => {
 });
 
 app.listen(PORT, async () => {
-  initDb();
+  await initDb();
   const DEMO_MODE = process.env.DEMO_MODE === 'true';
 
   if (!process.env.ADMIN_USER || !process.env.ADMIN_PASSWORD) {
@@ -595,9 +596,10 @@ app.listen(PORT, async () => {
     console.warn('⚠️  SENDGRID_API_KEY is missing; using DEMO_MODE fallback for local/dev. Set DEMO_MODE=true or add SendGrid credentials.');
   }
 
+  const databaseLabel = process.env.MONGODB_URI ? 'MongoDB Atlas' : 'SQLite (data/parceltrack.db)';
   console.log(`\n✨ SwiftTrack Express Server running on http://localhost:${PORT}`);
   console.log(`✓ Admin panel: http://localhost:${PORT}/admin/shipments`);
-  console.log(`✓ Database: SQLite (data/swifttrack.db)`);
+  console.log(`✓ Database: ${databaseLabel}`);
   console.log(`✓ Email: ${DEMO_MODE ? 'Demo Mode (console logging)' : (process.env.SENDGRID_API_KEY ? 'SendGrid configured' : 'Demo Mode fallback')}\n`);
   if (DEMO_MODE || (!process.env.ADMIN_USER || !process.env.ADMIN_PASSWORD)) {
     console.log('⚠️  Using fallback/default admin credentials for this environment\n');
