@@ -5,13 +5,31 @@ import { fileURLToPath } from 'url';
 import fs from 'fs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+
+export function hasPersistentStorageConfig(env = process.env) {
+  return Boolean(
+    env.MONGODB_URI ||
+    env.POSTGRES_URL ||
+    env.DATABASE_URL ||
+    env.VERCEL_POSTGRES_URL
+  );
+}
+
+export function getStorageMode(env = process.env) {
+  if (env.MONGODB_URI) return 'mongodb';
+  if (env.POSTGRES_URL || env.DATABASE_URL || env.VERCEL_POSTGRES_URL) return 'postgres';
+  if (env.VERCEL) return 'ephemeral-sqlite';
+  return 'local-sqlite';
+}
+
 const mongoUri = process.env.MONGODB_URI;
 const useMongo = Boolean(mongoUri);
+const storageMode = getStorageMode();
 
-const hasPersistentStorage = Boolean(mongoUri || process.env.POSTGRES_URL || process.env.DATABASE_URL || process.env.VERCEL_BLOB_READ_WRITE_TOKEN);
-
-if (process.env.VERCEL && !hasPersistentStorage) {
-  console.warn('[DB] Vercel detected: SQLite is using /tmp, which is ephemeral and will reset on cold starts. Shipments will disappear unless you connect a real persistent data store such as MongoDB Atlas.');
+if (process.env.VERCEL && !hasPersistentStorageConfig()) {
+  const message = '[DB] Vercel detected without a durable database. SQLite in /tmp is ephemeral and shipments will disappear on cold starts. Configure MONGODB_URI or a Postgres DATABASE_URL before deploying.';
+  console.error(message);
+  throw new Error(message);
 }
 
 const dbPath =

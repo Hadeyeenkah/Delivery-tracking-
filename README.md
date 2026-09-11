@@ -49,7 +49,8 @@ ADMIN_USER=admin ADMIN_PASSWORD=change-me npm run dev
 ## Notes
 - SwiftTrack Express is a demo application. This is not affiliated with any real shipping company.
 - Do not use any third-party company's branding, assets, or trademarks in production.
-- Data persists in SQLite database. Delete `data/shipments.db` to reset.
+- Local development can use SQLite, but Vercel deployments require a durable database such as MongoDB Atlas or Postgres.
+- SQLite in `/tmp` on Vercel is ephemeral and will lose data across deploys and cold starts.
 - Admin routes require Basic Auth (ADMIN_USER and ADMIN_PASSWORD environment variables).
 
 ## Docker
