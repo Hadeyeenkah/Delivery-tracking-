@@ -601,7 +601,7 @@ app.listen(PORT, async () => {
   console.log(`✓ Admin panel: http://localhost:${PORT}/admin/shipments`);
   console.log(`✓ Database: ${databaseLabel}`);
   console.log(`✓ Email: ${DEMO_MODE ? 'Demo Mode (console logging)' : (process.env.SENDGRID_API_KEY ? 'SendGrid configured' : 'Demo Mode fallback')}\n`);
-  if (DEMO_MODE || (!process.env.ADMIN_USER || !process.env.ADMIN_PASSWORD)) {
+  if (!process.env.ADMIN_USER || !process.env.ADMIN_PASSWORD) {
     console.log('⚠️  Using fallback/default admin credentials for this environment\n');
   }
 });

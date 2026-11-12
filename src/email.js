@@ -1,13 +1,16 @@
 import sgMail from '@sendgrid/mail';
 
-const SENDGRID_API_KEY = process.env.SENDGRID_API_KEY;
+const rawSendgridKey = (process.env.SENDGRID_API_KEY || '').trim();
+const hasValidSendgridKey = Boolean(rawSendgridKey && rawSendgridKey.startsWith('SG.'));
 const SENDER_EMAIL = process.env.SENDER_EMAIL || 'noreply@swifttrack.com';
-const DEMO_MODE = process.env.DEMO_MODE === 'true' || !SENDGRID_API_KEY;
+const DEMO_MODE = process.env.DEMO_MODE === 'true' || !hasValidSendgridKey;
 
-if (!SENDGRID_API_KEY) {
+if (!rawSendgridKey) {
   console.warn('⚠️  SENDGRID_API_KEY not set — running in DEMO_MODE (emails will be logged, not sent)');
+} else if (!hasValidSendgridKey) {
+  console.warn('⚠️  SENDGRID_API_KEY is invalid or placeholder — running in DEMO_MODE (emails will be logged, not sent)');
 } else {
-  sgMail.setApiKey(SENDGRID_API_KEY);
+  sgMail.setApiKey(rawSendgridKey);
 }
 
 export async function sendStatusUpdate(shipment) {
